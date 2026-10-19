@@ -201,17 +201,16 @@ Todos los mensajes son **texto** en el HTML (nunca solo color — R-04). Se decl
 
 ## 9. Supuestos, información pendiente y decisiones que requieren tu respuesta
 
-### Decisiones que requieren respuesta (bloqueantes para PLAN/IMPLEMENTACIÓN)
+### Decisiones resueltas (respuesta del usuario, 2026-10-16 — SPEC aprobada)
 
-- **P1 — Arquitectura: SPA con secciones o multipágina?** (§5.1). *Recomendación: Opción A (SPA con secciones y enlaces-ancla), por los motivos listados en §5.1.* Responder: **"A"** o **"B"** (o indicar otra condición).
-- **P2 — Nombre de la librería** para el `<h1>` del encabezado (la consigna pide "título de la librería" pero no lo define). *Propuesta: «Librería El Estante»* — aceptar o indicar el nombre a usar.
+- **P1 — Arquitectura: RESUELTA → Opción A (SPA con secciones).** Un solo `index.html` con `<section id="catalogo|libros|clientes|ventas|historial">` y enlaces-ancla en `<nav>`.
+- **P2 — Nombre de la librería: RESUELTA → «Librería El Estante»** para el `<h1>` del encabezado.
+- **P3 — `<template>`: RESUELTA → incluirlos** (`#plantilla-libro`, `#plantilla-renglon`).
+- **P4 — Historial: RESUELTA → 4 columnas obligatorias + columna "Detalle"** con botón "Ver detalle" renderizado por JS.
+- **P5 — Placeholders CSS/JS: RESUELTA → crear `css/styles.css` y `js/app.js` vacíos** (comentario de encabezado) para que los enlaces no den 404 en `file://`.
+- **P6 — Validación nativa: RESUELTA → sin `required`/`pattern`/`min`** en el Ejercicio 1.
 
-### Decisiones no bloqueantes (se avanzan con la propuesta salvo veto)
-
-- **P3 — `<template>` para tarjeta de libro y fila de renglón.** *Propuesta: incluirlos* (`#plantilla-libro`, `#plantilla-renglon`): refuerza "preparación JS" sin introducir lógica ni datos renderizados.
-- **P4 — Columna extra "Detalle" en la tabla del historial.** La consigna pide las 4 columnas (identificador, fecha, cliente, total) *y* "acceso a sus detalles". *Propuesta: 4 columnas obligatorias + columna "Detalle" con botón "Ver detalle"* renderizado por JS (operable por teclado). Alternativa: hacer el identificador un botón dentro de su propia celda.
-- **P5 — Placeholders de `css/styles.css` y `js/app.js`.** *Propuesta: crear ambos archivos vacíos (con un comentario de encabezado) para que los enlaces no den 404 en `file://`.* Alternativa: dejar los enlaces colgantes hasta el Ejercicio 2.
-- **P6 — Atributos de validación nativos** (`required`, `pattern`, `min`). *Propuesta: no incluirlos en el Ejercicio 1* (la validación es del Ejercicio 4 y el alcance de este ejercicio excluye lógica de validación); se podrá agregar después junto con la validación JS si se aprueba.
+*La aprobación de la SPEC y estas respuestas habilitan la Fase 2 (PLAN).*
 
 ### Supuestos declarados
 
