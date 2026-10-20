@@ -1,0 +1,212 @@
+# Resumen de implementación — Ejercicio 2: Presentación con CSS y uso adaptable
+
+Proyecto: **Primer Parcial — Programación III: Frontend de una librería (Ejercicio 2)**
+Fase: **3 (IMPLEMENTACIÓN) completada** — sobre SPEC aprobada (`docs/ejercicio2-spec.md`, P1 resuelta) y PLAN aprobado (`docs/ejercicio2-plan.md`, tareas T-01…T-13).
+Fecha de redacción: 2026-10-20.
+
+## 1. Resumen de cambios
+
+Se ejecutaron las 13 tareas del plan. **El único archivo de producto modificado es `css/styles.css`**: `index.html` y `js/app.js` no se tocaron (verificado con `git diff`).
+
+| Tarea | Resultado |
+|---|---|
+| T-01 | `:root` con los **38 custom properties** de la SPEC §5.2: 12 de color base, 3 derivados por `color-mix`, 6 de tipografía (2 pilas + 4 tamaños fluidos), 8 de espaciado, 4 de radios, 3 de sombras, 2 de layout. |
+| T-02 | Capa base (`box-sizing: border-box` universal, reset de `h1`–`h3`/`p`/`fieldset`/`legend`, `html { scroll-behavior: smooth; color-scheme: light }`, `body` en flex vertical con `font-variant-numeric: tabular-nums`) y capa de layout (`.encabezado` + `h1` serif, `.navegacion` sticky, `.nav-enlace`, `.contenido`, **`.vista` como panel de superficie**, `.vista > h2`, `.pie` con `margin-block-start: auto`). |
+| T-03 | `.formulario` en grid fluido `minmax(min(100%, 16rem), 1fr)`; `.campo`; `.campo__control` con borde `--color-texto-suave` y `min-block-size: 2.75rem`; `select[multiple]` con 8 rem; `.renglon-alta` (fieldset) con reset, borde `--color-borde-fuerte` y legend en serif. |
+| T-04 | `.boton` base (`inline-flex`, `min-block-size: 2.75rem`), primario con `:hover`/`:active` derivados, `.boton--secundario`, `.boton--modificar` y `.boton--quitar` (destructivo, `--color-error`). |
+| T-05 | `.mensaje` con las 3 variantes, glifo `::before` por estado (`✓` `✕` `ℹ`) y **`.mensaje[hidden] { display: none; }`**. |
+| T-06 | `.tabla-contenedor` (único origen de scroll horizontal, `overflow-x/y: auto`, `min-inline-size: 0`) y `.tabla` (`inline-size: 100%` + `min-inline-size: max-content`), `thead th`, `tbody td`, hover de fila, `.fila-renglon__acciones` con `white-space: nowrap` y **sin** flex. |
+| T-07 | Estilos de preparación de §5.8: `.libro` (+`hover`), `.libro__titulo`, `.libro__datos` con `dt`/`dd`, los 5 `libro__*`, `.listado--catalogo`, las 6 `.fila-renglon__*`, `.venta__total` + `output`, `.detalle-venta`, y la clase reservada `.boton--secundario`. |
+| T-08 | `:focus-visible` global (anillo 2 px `--color-foco` + halo) y `.tabla-contenedor:focus-visible` con anillo hacia adentro (`outline-offset: -3px`). **Cero `outline: none`.** |
+| T-09 | `@media (min-width: 48rem)` y `@media (min-width: 64rem)`. Ningún `max-width`. |
+| T-10 | `@media (prefers-reduced-motion: reduce)` con las tres declaraciones `!important` justificadas y `html { scroll-behavior: auto; }` **sin** `!important`. |
+| T-11 | Verificación por controles automatizables de solo lectura — §2.2. |
+| T-12 | Verificación real en navegador a 320 px y 1280 px sobre copia temporal — §2.3 y §2.4. |
+| T-13 | Este documento. |
+
+**Resultado material:** `css/styles.css` pasa de 3 líneas (placeholder) a **623 líneas / 15.546 bytes**, con **80 bloques de regla**, **269 declaraciones**, **3 bloques `@media`** y **38 custom properties**. El `git status` muestra `M css/styles.css` y los dos documentos nuevos de `docs/`; nada más.
+
+### 1.1 Ajustes respecto de la SPEC (aditivos, sin salir del alcance)
+
+- **D14 (nuevo,documentado en la SPEC §9.2):** `.renglon-alta` declara `background-color: var(--color-superficie)`. El recorte nativo del `<legend>` se rellena con el fondo del fieldset; con el fieldset transparente, el borde puede verse detrás del texto. **En Edge 155 el recorte ya se compone con el color del panel** (verificado por análisis de píxeles: el borde se corta correctamente), por lo que la regla es **defensiva y no cambia el render medido**. Se documentó en la SPEC §5.3 y §9.2 para mantener SPEC e implementación en sincronía.
+- **Nada más.** No se cambió ninguna regla de la SPEC, ni se agrego ninguna clase al HTML, ni se amplió el alcance.
+
+---
+
+## 2. Comprobaciones realizadas (evidencia)
+
+### 2.1 Capas y condiciones de medición
+
+| Aspecto | Dato |
+|---|---|
+| Navegador | EdgeCore **155.0.4283.62**, en `C:\Program Files (x86)\Microsoft\EdgeCore\155.0.4283.62\msedge.exe` (**no está en el `PATH`**; invocado por ruta absoluta) |
+| Modo | `--headless=new --disable-gpu --virtual-time-budget=… --dump-dom` |
+| Viewport de 320 px | **arnés de `<iframe>`** de 320 px (Edge headless impone un ancho mínimo de 492 px: `--window-size=320,800` devuelve `innerWidth` = 492; se probaron `--headless=new`, `--headless=old`, `--force-device-scale-factor=1` y `--hide-scrollbars`, los cuatro devuelven 492) |
+| Copia medida | `%TEMP%\opencode\verif-ej2\` (copia de `index.html` + `css/`). **`index.html` del proyecto no se modificó** (`git status` lo confirma) |
+| Reporte | `postMessage` del iframe al arnés. **El script no inyecta elementos en la página medida** (un `<pre>` con líneas largas ensancha el documento: 2085 px con él, 305 px sin él, con CSS idéntico) |
+
+### 2.2 Capa (a) — controles objetivos de solo lectura: **48/48 APROBADOS**
+
+Script en la carpeta temporal (no se agrega al proyecto). Resultado: **48/48 APROBADOS, 0 fallidos**.
+
+| Control | Resultado |
+|---|---|
+| `index.html` sin `style=` inline, sin `<style>`, sin `<script>` con cuerpo | APROBADO |
+| Cero URLs externas (`http://`, `https://`, `//`) en `index.html` y `styles.css`; sin `url()`, `@import` ni `@font-face` | APROBADO |
+| Cero selectores por `id` usados para estilo (solo `:root`, que es pseudo-clase) | APROBADO |
+| `!important` solo dentro del bloque `prefers-reduced-motion` (3 declaraciones) | APROBADO |
+| `scroll-behavior: auto` sin `!important` | APROBADO |
+| Sin `width:` fijo en px; sin `max-width` en media queries; 2 `@media min-width` + 1 `prefers-reduced-motion` | APROBADO |
+| `:root` con **38** custom properties; los 12 hexadecimales de la paleta, uno de cada uno | APROBADO |
+| `box-sizing: border-box` universal; `clamp(` ×4; `minmax(min(100%` ×4; `min-inline-size: 0` ×5 | APROBADO |
+| `:focus-visible` presente y **cero** `outline: none` / `outline: 0` | APROBADO |
+| `.mensaje[hidden] { display: none }` presente | APROBADO |
+| `.tabla-contenedor` con `overflow-x: auto` | APROBADO |
+| `grid-column: 1 / -1` en `.formulario > …`; `.pie { margin-block-start: auto }`; `justify-self` en `.formulario > .boton` | APROBADO |
+| `.vista` con `scroll-margin-top` y superficie de panel | APROBADO |
+| Cero `display: flex` sobre un selector `td`; `position: sticky` **solo** en `.navegacion`; `thead` en `static` | APROBADO |
+| Los 3 glifos de mensaje presentes | APROBADO |
+| `.boton--secundario` declarada; `.boton--enlace` **ausente** (descartada en D8) | APROBADO |
+| Sin lógica en el CSS (`addEventListener`, `localStorage`, `fetch(`, funciones) | APROBADO |
+| Clases del CSS que no existen en el HTML: **solo `.boton--secundario`** (la reservada de D8) | APROBADO |
+| **CA-05 — alcance puro:** `git diff HEAD -- index.html js/app.js` sin diferencias; ningún archivo fuera de `css/styles.css` y `docs/` creado o modificado | APROBADO |
+
+> **Transparencia:** en la primera corrida, 2 controles marcaron FALLIDO y eran **falsos positivos de mi propio script**: (a) el detector de "selectores por `id`" confundía los hexadecimales de la paleta (`#f7f1e6`, …) con identificadores; (b) el control de media queries exigía exactamente 2 bloques `@media` y no contaba el de `prefers-reduced-motion`. Se corrigieron ambos controles (excluyendo colores hexadecimales válidos del patrón de id, y contando el tercer bloque por separado) y se reejecutó: **48/48**.
+
+### 2.3 Capa (b) — navegador real, viewport de 320 px y de 1280 px
+
+Arnés de `<iframe>`; las dos mediciones son de la **misma copia instrumentada**, con el CSS definitivo.
+
+| # | Control | 320 px | 1280 px | Estado |
+|---|---|---|---|---|
+| B1 | `documentElement.scrollWidth <= clientWidth` | 305 ≤ 305 ✔ | 1265 ≤ 1265 ✔ | APROBADO |
+| B2 | Ningún elemento **fuera** de un contenedor con scroll rebasa el `innerWidth` | NINGUNO | NINGUNO | APROBADO |
+| B3 | `.tabla-contenedor` con scroll propio | **5 de 5** desplazan (221 px de cliente; tablas de 227–467 px) | 0 de 5 (las 5 caben: 924/924) | APROBADO |
+| B4 | Los 7 mensajes con `hidden` tienen `display: none` | 7/7 | 7/7 | APROBADO |
+| B5 | Los 3 mensajes visibles se muestran con su texto exacto | 3/3 ✔ | 3/3 ✔ | APROBADO |
+| B6 | Glifo por variante | `✓`×3, `✕`×3, `ℹ`×4 | igual | APROBADO |
+| B7 | Media query de 48 rem | **inactiva** | **activa** | APROBADO |
+| B8 | Escala fluida `clamp()` | `h1` 22 px · body 16,016 px · `h2` de vista 19,0006 px | `h1` 40 px · body 17 px · `h2` de vista 26 px | APROBADO |
+| B9 | Foco visible en los **26** puntos de foco del DOM vivo | `outline: solid 2px rgb(15,90,168)` (`--color-foco`), `offset 2px` | igual | APROBADO |
+| B10 | Anillo del `.tabla-contenedor` hacia adentro | `outline-offset: -3px` | igual | APROBADO |
+| B11 | Cero `outline: none` / anulación de foco | 0 | 0 | APROBADO |
+| B12 | Ningún botón por debajo de 44 px de alto | NINGUNO | NINGUNO | APROBADO |
+| B13 | Contraste **renderizado** (color computado vs fondo efectivo real) | 8 pares, todos AA | 8 pares, todos AA | APROBADO |
+| B14 | `document.styleSheets.length` | 1 (solo `css/styles.css`) | 1 | APROBADO |
+| B15 | **Breakpoint intermedio de 768 px** (cierre de T-09) | `scrollWidth` 768 = `clientWidth` 768; sin desborde; MQ48 **activa**; las 5 tablas caben (636/636, sin scroll); `h1` 30,4 px · body 16,4864 px · `h2` de vista 22,2675 px | idem | APROBADO |
+| B16 | **Medición con `--hide-scrollbars`** (cierra el control PENDIENTE de §2.6) | `scrollWidth` 320 = `clientWidth` 320 = `innerWidth` 320; sin desborde; 4/5 contenedores con scroll propio | 1280 = 1280 = 1280; sin desborde | APROBADO |
+
+**Contraste renderizado medido en el navegador** (mismo cálculo que §2.4, pero sobre los colores computados reales):
+
+| Elemento | Ratio | Veredicto |
+|---|---|---|
+| `.encabezado h1` | 15,03:1 | AA ✔ |
+| `.nav-enlace` | 5,82:1 | AA ✔ |
+| `.campo label` | 15,03:1 | AA ✔ |
+| `.campo__control` | 15,03:1 | AA ✔ |
+| `.mensaje--vacio` | 5,63:1 | AA ✔ |
+| `.vista > h2` | 15,03:1 | AA ✔ |
+| `.tabla thead th` | 12,34:1 | AA ✔ |
+| `.pie` | 6,62:1 | AA ✔ |
+
+**Mediciones suplementarias** (misma copia, viewport de 1280 px):
+
+| # | Control | Medición | Estado |
+|---|---|---|---|
+| S1 | `.navegacion` | `position: sticky`, `top: 0px`, `min-block-size: 48px`, fondo `rgb(255,253,248)` | APROBADO |
+| S2 | Las 5 `.vista` | 5 visibles y apiladas; cada una con fondo de superficie, radio 14 px, sombra y `scroll-margin-top: 64px` (= 48 + 16) | APROBADO |
+| S3 | `.pie` al pie de la ventana (D12) | con el contenido acotado a 120 px, `pie.bottom` = 900 = `innerHeight` → **pegado al pie** | APROBADO |
+| S4 | Movimiento reducido (T-10) | con `--force-prefers-reduced-motion`: `prefers-reduced-motion` = true, `scroll-behavior` = **auto**, `transition-duration` = **1e-05s** | APROBADO |
+| S5 | `thead` sin `position: sticky` (D11) | `position: static` | APROBADO |
+| S6 | `fieldset` y `legend` | borde `1px solid`, `legend` en Georgia | APROBADO |
+| S7 | `<output>` y `<select multiple>` | `font-variant-numeric: tabular-nums`; `min-block-size: 128px` (8 rem) | APROBADO |
+| S8 | `.formulario > .boton` a 1280 px (D13) | `justify-self: start`, `inline-size: 142,875px` (intrínseco, no estirado) | APROBADO |
+
+### 2.4 Capa (b) — verificación visual de las capturas: **APROBADO**
+
+A diferencia del Ejercicio 1, **las capturas se pudieron inspeccionar realmente**: se generaron, se recortaron al ancho exacto y se leyeron como imagen.
+
+| Captura | Archivo | Ancho | Resultado de la inspección |
+|---|---|---|---|
+| 1280 px | `%TEMP%\opencode\verif-ej2\caps\captura1280.png` | 1280 px exactos | Las 5 vistas se leen como **5 paneles separados** sobre el fondo crema, con títulos serif, filete bajo cada título, formularios alineados, tablas con encabezadoAlternate, mensajes tintados con glifo `ℹ`, botones terracota y el pie al final. Correcto. |
+| 320 px | `%TEMP%\opencode\verif-ej2\caps\captura320.png` | 320 px exactos | Una columna; el `<nav>` **envuelve a dos líneas sin scroll horizontal**; botones a ancho completo; los `<select multiple>` con altura de 8 rem; **las tablas quedan recortadas en su contenedor** (scroll interno) sin desbordar la página. Correcto. |
+
+Las capturas quedan **fuera del proyecto**, en la carpeta temporal.
+
+**Investigación de un posible defecto visual (resuelta, sin defecto).** Al inspeccionar la captura de 1280 px, el `<legend>` "Agregar renglón a la venta" parecía cruzado por el borde del `<fieldset>`. Se investigó con **análisis de píxeles** (no con el ojo): en la fila del borde (y = 1786) el patrón es `B` a la izquierda del legend, superficie y glifos `T`/`.` bajo el texto, y `B` reanudando a la derecha — es decir, **el borde se corta correctamente** detrás del legend. Se comparó el render **con y sin** el `background-color` añadido al fieldset (D14): **idéntico**. La percepción inicial era errónea; la regla D14 se conserva como defensa de composición y queda documentada como tal, sin atribuirle un defecto que no existía.
+
+**Observación cosmética aceptada (no es defecto).** A 320 px el `<legend>` envuelve a dos líneas ("Agregar renglón a la / venta"). Es el comportamiento nativo de `<legend>` cuando no entra en el ancho del fieldset; la segunda línea queda dentro del padding del fieldset **sin colisionar** con el contenido (medido y verificado en la captura). Impedir el envoltura (`white-space: nowrap`) haría que el texto **desbordara** el fieldset, que es peor. Se deja como está.
+
+### 2.5 Contraste de la paleta (cálculo exigido)
+
+Calculado con la fórmula de WCAG 2.1 sobre los tokens **definidos en el CSS entregado**, y verificado además contra los colores computados en el navegador (§2.3):
+
+| Par | Ratio | | Par | Ratio |
+|---|---|---|---|---|
+| `--color-texto` sobre `--color-fondo` | **13,59:1** ✔ | | `--color-exito` sobre `--color-superficie` | **6,24:1** ✔ |
+| `--color-texto` sobre `--color-superficie` | **15,03:1** ✔ | | `--color-exito` sobre `--color-acento-suave` | **4,79:1** ✔ |
+| `--color-texto` sobre `--color-superficie-alt` | **12,34:1** ✔ | | `--color-error` sobre `--color-superficie` | **7,20:1** ✔ |
+| `--color-texto-suave` sobre `--color-fondo` | **6,62:1** ✔ | | `--color-error` sobre `--color-acento-suave` | **5,54:1** ✔ |
+| `--color-texto-suave` sobre `--color-superficie` | **7,33:1** ✔ | | `--color-error` con texto blanco | **7,32:1** ✔ |
+| `--color-texto-suave` sobre `--color-superficie-alt` | **6,01:1** ✔ | | `--color-foco` sobre `--color-fondo` | **6,13:1** ✔ |
+| `--color-acento` sobre `--color-fondo` | **5,26:1** ✔ | | `--color-foco` sobre `--color-superficie` | **6,78:1** ✔ |
+| `--color-acento` sobre `--color-superficie` | **5,82:1** ✔ | | `#ffffff` sobre `--color-acento` | **5,91:1** ✔ |
+| `--color-acento` sobre `--color-acento-suave` | **4,47:1** ✘ | | `#ffffff` sobre `--color-acento-hover` | **7,60:1** ✔ |
+| `--color-borde-fuerte` sobre `--color-superficie` | **2,26:1** ✘ | | `#ffffff` sobre `--color-acento-activo` | **9,17:1** ✔ |
+| `--color-borde` sobre `--color-superficie` | 1,54:1 (decorativo) | | `#ffffff` sobre `--color-error-hover` | **9,15:1** ✔ |
+
+Los **dos casos que no alcanzan el umbral** están resueltos por **mapeo de uso**, sin tocar la paleta: `--color-acento` no se usa como texto sobre `--color-acento-suave` (el hover de los enlaces usa `--color-superficie-alt`, donde da 4,78:1), y `--color-borde-fuerte` no se usa como borde que identifique un control (los bordes de campo usan `--color-texto-suave`, 7,33:1). Detalle en la SPEC §7.9, D1 y D2.
+
+### 2.6 No ejecutadas / pendientes (NO se declaran aprobadas)
+
+| Control | Estado | Motivo |
+|---|---|---|
+| Recorrido de teclado en vivo (pulsación real de `Tab` y `Enter` sobre la ventana) | **OMITIDO** | Requiere interacción gráfica con la ventana; el agente no opera el navegador de forma interactiva. El foco se verificó **por medios programáticos**: los 26 elementos de la lista de foco se enfocaron uno por uno y todos lo encontraron con anillo `outline: solid 2px rgb(15,90,168)` (B9). |
+| Comportamiento en otros navegadores (Firefox, Safari, Chrome) | **OMITIDO** | No están instalados en la máquina. Solo se verificó EdgeCore 155. |
+| Lectura de las reglas CSS por `document.styleSheets[0].cssRules` | **OMITIDO** | Bloqueada por la política de origen único de `file://` en Chromium (la propiedad devolvió `n/a`). Se comprobó por otra vía: `document.styleSheets.length` = 1 y `document.styleSheets[0].href` apunta a `css/styles.css`; el contenido del archivo se verificó directamente por lectura de texto. |
+| Ancho real de la barra de desplazamiento del sistema | **APROBADO** | **Cerrado en esta fase.** Medido: 15 px a 320 px de viewport y 15 px a 1280 px (`innerWidth` 320/1280 frente a `clientWidth` 305/1265). La medición repetida con `--hide-scrollbars` da `scrollWidth == clientWidth == innerWidth` en los tres anchos (320, 768, 1280), de modo que **la barra no altera el veredicto** en ningún caso (control B16). |
+
+---
+
+## 3. Limitaciones
+
+- La verificación de navegador cubre **un solo motor** (EdgeCore 155). Firefox y Safari no están instalados: no se puede afirmar compatibilidad entre navegadores.
+- El recorrido de teclado se verificó **programáticamente** (enfoque + estilos computados), no con pulsaciones reales sobre la ventana.
+- La inspección visual se hizo sobre **capturas estáticas**: no se verificó el comportamiento interactivo (hover, focus visible por teclado, transición de scroll suave).
+- Las tablas están hoy vacías (los `tbody` se llenan en los Ej. 3–5): la apariencia con contenido real —filas largas, correos extensos, autores múltiples— **no** pudo verificarse y deberá revisarse en los ejercicios siguientes. Las reglas de preparación (§5.8) están escritas para esos casos, pero sin datos no hay evidencia.
+- Los componentes de los Ej. 3–6 (`.libro`, `.fila-renglon`, `.venta__total`, `.detalle-venta`) están **estilizados pero sin render**: su apariencia real solo se confirmará cuando exista contenido.
+- Sin `README`, sin casos manuales, sin persistencia: corresponden al Ejercicio 6.
+
+## 4. Pendientes (fuera de este ejercicio, por diseño)
+
+1. Datos, render del catálogo, filtro por título, altas con validación, populate de selectores, ventas, historial y `localStorage` — Ejercicios 3–6.
+2. Vista activa en la navegación: en CSS puro exigiría selectores por `id` (contradice CA-01); queda para el Ejercicio 3 con JS (D10).
+3. README y casos manuales — Ejercicio 6.
+4. Revisión de la apariencia de las tablas **con contenido real** (Ej. 5) y de las tarjetas del catálogo (Ej. 3).
+
+## 5. Archivos generados
+
+| Archivo | Acción |
+|---|---|
+| `css/styles.css` | **modificado**: 3 líneas → 623 líneas (15.546 bytes, 80 reglas, 269 declaraciones, 38 tokens) |
+| `docs/ejercicio2-spec.md` | Fase 1 (actualizada con P1 resuelta, D1–D14 y las correcciones de la auditoría) |
+| `docs/ejercicio2-plan.md` | Fase 2 |
+| `docs/ejercicio2-implementacion-resumen.md` | este archivo |
+| `index.html` | **sin cambios** |
+| `js/app.js` | **sin cambios** |
+
+Fuera del proyecto (temp del sistema, no se entrega): copia de verificación, arnés de `<iframe>`, scripts de control, capturas PNG.
+
+## 6. Mapeo a requisitos y criterios
+
+| Criterio | Evidencia | Estado |
+|---|---|---|
+| **CA-01** (R-01, R-02, R-06) | 8 familias de estilos definidas; 38 tokens en `:root`; 45 clases del HTML reutilizadas (38 existentes + 1 reservada); 0 selectores por `id`; 0 CSS inline; 0 URLs externas (§2.2) | **APROBADO** |
+| **CA-02** (R-05) | `scrollWidth == clientWidth` a 320 y 1280 px; 5/5 contenedores de tabla con scroll propio a 320 px; ningún elemento desborda fuera de un scroller; escala fluida verificada (B1–B3, B8) | **APROBADO** |
+| **CA-03** (R-04) | Los 26 puntos de foco con anillo `solid 2px rgb(15,90,168)`; anillo del contenedor hacia adentro; 0 `outline: none`; botones ≥ 44 px; contraste renderizado AA en 8 pares; mensajes legibles por su texto y con doble señal (B9–B13) | **APROBADO** (recorrido de teclado en vivo: **OMITIDO**, §2.6) |
+| **CA-04** (R-03, R-07) | 10 contenedores de estado con estilo distinguible; 7/7 ocultos respetan `hidden`; 3/3 visibles; glifos correctos; reglas de preparación de §5.8 presentes; `<template>` inerte y `js/app.js` vacío (B4–B6, §2.2) | **APROBADO** |
+| **CA-05** (global) | `git diff` sin diferencias en `index.html` y `js/app.js`; único archivo de producto modificado: `css/styles.css`; sin JS, datos, imágenes, README ni modo oscuro | **APROBADO** |
+| **CA-06** (global) | CSS3 moderno con custom properties; BEM en español; mobile-first; `box-sizing: border-box` global; `min-inline-size: 0`; `clamp()`/`minmax()`; `!important` solo justificado; 0 `style=` inline; 0 URLs externas | **APROBADO** |
+| **CA-07** (R-08) | 48 controles de la capa (a) + 16 de la capa (b) + 8 suplementarios + 8 de contraste, todos ejecutados y reportados | **APROBADO** |
+| **CA-08** (R-08) | 3 controles marcados **OMITIDO** con su motivo (§2.6) — ninguno presentado como aprobado; el único **PENDIENTE** se cerró ejecutándolo (B16); 2 falsos positivos de mi propio script corregidos y documentados | **APROBADO** |
+| **CA-09** (global) | Supuestos S1–S9, decisiones D1–D14, pendientes y limitaciones identificados en la SPEC §9 y en §2.6, §3 y §4 de este resumen | **APROBADO** |
