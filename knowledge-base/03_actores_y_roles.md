@@ -16,12 +16,12 @@ El control de acceso es **inexistente por diseño**, así que no hay matriz de p
 
 | Ejercicio | Change OpenSpec | Quién lo ejecuta | Puede tocar |
 |---|---|---|---|
-| 1 — Estructura y pantallas HTML | `ejercicio1-estructura-html` | *(ya implementado)* | `index.html` |
-| 2 — Presentación con CSS | `ejercicio2-estilos-css` | *(ya implementado)* | `css/` |
-| 3 — Datos locales, catálogo y filtro | `ejercicio3-datos-catalogo-filtro` | a definir | `js/app.js` |
-| 4 — Alta de libros y clientes | `ejercicio4-altas-libros-clientes` | a definir | `js/app.js` |
-| 5 — Venta simulada e historial | `ejercicio5-venta-historial` | a definir | `js/app.js` |
-| 6 — Persistencia, verificación y documentación | `ejercicio6-persistencia-documentacion` | a definir | `js/app.js`, `README.md` |
+| 1 — Estructura y pantallas HTML | `ejercicio1-estructura-html` | **Maximiliano Reinoso** | `index.html` |
+| 2 — Presentación con CSS | `ejercicio2-estilos-css` | **Luciano Ibañez** | `css/` |
+| 3 — Datos locales, catálogo y filtro | `ejercicio3-datos-catalogo-filtro` | **Xavier Papalardo** | `js/app.js` |
+| 4 — Alta de libros y clientes | `ejercicio4-altas-libros-clientes` | **Benjamin Arollo** | `js/app.js` |
+| 5 — Venta simulada e historial | `ejercicio5-venta-historial` | **Martin Sisterna** | `js/app.js` |
+| 6 — Persistencia, verificación y documentación | `ejercicio6-persistencia-documentacion` | **Lautaro Gómez Canovas** | `js/app.js`, `README.md` |
 
 Regla de convivencia entre ejercicios, derivada de la separación de responsabilidades de la consigna:
 

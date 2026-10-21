@@ -21,6 +21,10 @@ context: |
   - js/app.js    -> compartido por C-03, C-04, C-05 y C-06. Por eso el paralelismo
                      entre esos changes es LÓGICO, no de escritura concurrente: el
                      merge se serializa C-03 -> C-04/C-05 -> C-06.
+                     Responsables (2026-10-21), tambien en el campo assignee de cada
+                     .openspec.yaml: C-01 Maximiliano Reinoso · C-02 Luciano Ibañez ·
+                     C-03 Xavier Papalardo · C-04 Benjamin Arollo ·
+                     C-05 Martin Sisterna · C-06 Lautaro Gómez Canovas.
   - README.md    -> dueño: C-06 (ejercicio6).
   - docs/        -> un spec, un plan y un resumen de implementación por ejercicio.
   - knowledge-base/ -> base de conocimiento del proyecto (13 archivos). Es la fuente

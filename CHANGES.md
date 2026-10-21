@@ -70,16 +70,34 @@ GATE 1: C-01 ✓
   → C-02 ejercicio2-estilos-css                [Agente B — CSS]    ✓ ya ejecutado
 
 GATE 2: C-01 ✓ + C-02 ✓
-  → C-03 ejercicio3-datos-catalogo-filtro      [Persona 3 — JS]    ← único change habilitado
+  → C-03 ejercicio3-datos-catalogo-filtro      [Xavier Papalardo — JS]    ← único change habilitado
 
 GATE 3: C-03 ✓                                ← PRIMER FORK (2 ramas lógicas)
-  → C-04 ejercicio4-altas-libros-clientes      [Persona 4 — JS]
-  → C-05 ejercicio5-venta-historial            [Persona 5 — JS]
+  → C-04 ejercicio4-altas-libros-clientes      [Benjamin Arollo — JS]
+  → C-05 ejercicio5-venta-historial            [Martin Sisterna — JS]
         (paralelo lógico; el merge de js/app.js se serializa)
 
 GATE 4: C-04 ✓ + C-05 ✓
-  → C-06 ejercicio6-persistencia-documentacion [Persona 6 — JS + README]
+  → C-06 ejercicio6-persistencia-documentacion [Lautaro Gómez Canovas — JS + README]
 ```
+
+### Orden de arranque y de merge (los 4 escriben `js/app.js`)
+
+| # | Change | Responsable | Arranca cuando | Merge a `main` |
+|---|---|---|---|---|
+| 1 | C-03 | Xavier Papalardo | **ya** (es el único habilitado) | primero: define los datos locales y el render |
+| 2 | C-04 | Benjamin Arollo | C-03 mergeado | segundo: consume los datos de C-03 y agrega el registro de clientes y libros |
+| 3 | C-05 | Martin Sisterna | C-04 mergeado | tercero: consume los clientes que registró C-04 |
+| 4 | C-06 | Lautaro Gómez Canovas | C-04 y C-05 mergeados | último: agrega `localStorage` y el `README.md` |
+
+**El fork de GATE 3 es lógico, no de escritura concurrente.** Los cuatro escriben el mismo `js/app.js`, así que el orden de merge es **C-03 → C-04 → C-05 → C-06**, uno atrás de otro. Mergear C-05 antes que C-04 rompe la venta: C-05 consume clientes y C-04 es quien los registra.
+
+**Cómo trabajar sin pisarse:**
+
+1. Cada quien trabaja en **su propia rama** (`feature/ejercicioN-<apellido>`), nunca en `main` directo.
+2. Cada quien abre **su change** con `/opsx:propose <nombre-del-change>` y su `tasks.md` declara que solo toca `js/app.js` (y `README.md` en el caso de C-06).
+3. Cuando el change de la fila 1 está mergeado, arranca el de la fila 2. **No se espera a que terminen los dos del fork.**
+4. `/opsx:apply` y luego `/opsx:archive`. Con el change archivado, su spec queda en `openspec/specs/` y es la base del siguiente.
 
 ### Camino crítico (5 changes — mínimo irreducible)
 
@@ -97,10 +115,10 @@ C-01 → C-02 → C-03 → C-05 → C-06
 |---|---|---|---|
 | 1 | C-01 ejercicio1-estructura-html ✓ | — | — |
 | 2 | — | C-02 ejercicio2-estilos-css ✓ | — |
-| 3 | — | — | C-03 ejercicio3-datos-catalogo-filtro (Persona 3) |
-| 4 | — | — | C-04 ejercicio4-altas-libros-clientes (Persona 4) — rama A |
-| 5 | — | — | C-05 ejercicio5-venta-historial (Persona 5) — rama B |
-| 6 | — | — | C-06 ejercicio6-persistencia-documentacion (Persona 6) |
+| 3 | — | — | C-03 ejercicio3-datos-catalogo-filtro (Xavier Papalardo) |
+| 4 | — | — | C-04 ejercicio4-altas-libros-clientes (Benjamin Arollo) — rama A |
+| 5 | — | — | C-05 ejercicio5-venta-historial (Martin Sisterna) — rama B |
+| 6 | — | — | C-06 ejercicio6-persistencia-documentacion (Lautaro Gómez Canovas) |
 
 Los pasos 3 a 6 los ejecuta **una persona distinta cada uno** (el equipo aún debe asignar responsables — KB `10_preguntas_abiertas.md`, pregunta abierta de prioridad Alta). Como los cuatro escriben `js/app.js`, la columna C avanza **en serie**; el paso 4 y el 5 son ramas de la misma duración, no trabajo concurrente sobre el mismo archivo.
 

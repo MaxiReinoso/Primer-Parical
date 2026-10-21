@@ -31,7 +31,7 @@
 | Prioridad | Pregunta | Bloquea | Decisor |
 |---|---|---|---|
 | Alta | ¿Qué motor de render se usa para la verificación? Hoy hay **uno solo** (Edge headless) y el resto queda OMITIDO con su motivo. Instalar un segundo motor (hay `winget` y `choco`) cerraría ese control. | Cierre de la verificación del Ejercicio 2 | Docente / equipo |
-| Alta | ¿Quién ejecuta cada change? Los 6 changes están creados en estado *propose*; falta asignar responsable por change para evitar que dos personas toquen `js/app.js` a la vez. | Ejercicios 3–6 | Equipo |
+| ~~Alta~~ **RESUELTA** | ¿Quién ejecuta cada change? **Asignado el 2026-10-21:** C-01 → Maximiliano Reinoso · C-02 → Luciano Ibañez · C-03 → Xavier Papalardo · C-04 → Benjamin Arollo · C-05 → Martin Sisterna · C-06 → Lautaro Gómez Canovas. Queda registrado en el campo `assignee` de cada `.openspec.yaml` y en `knowledge-base/03_actores_y_roles.md`. | — | — |
 | Media | ¿El `README.md` (Ejercicio 6) lo escribe quien ejecute ese change, o se prepara ahora con lo ya verificado? | Ejercicio 6 | Equipo |
 | Media | ¿La KB y el `CHANGES.md` se versionan en el repo o viven solo en la máquina? Hoy están en el repo, en el mismo commit que el resto. | Entrega | Docente |
 | Media | ¿Conviene agregar casos manuales del Ejercicio 6 (pág. 5 de la consigna) como change aparte, o forman parte del change de persistencia? | Ejercicio 6 | Equipo |
