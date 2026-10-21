@@ -27,4 +27,4 @@ No hay cambios rompientes: el proyecto no tenía interfaz previa.
 - `index.html`: **creado** (264 líneas, 10.358 bytes). Única fuente de verdad del markup: los ejercicios siguientes lo consumen, no lo modifican.
 - `css/styles.css`, `js/app.js`: creados como placeholders vacíos (3 líneas cada uno) para que el `<link>` y el `<script>` no fallen.
 - Sin dependencias, sin build, sin backend. El proyecto se abre con doble clic desde `file://`.
-- Documentación de la fase: `docs/ejercicio1-spec.md`, `docs/ejercicio1-plan.md`, `docs/ejercicio1-implementacion-resumen.md`.
+- Documentación de la fase: `openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/spec-ejercicio1.md`, `openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/plan-ejercicio1.md`, `docs/ejercicio1-implementacion-resumen.md`.

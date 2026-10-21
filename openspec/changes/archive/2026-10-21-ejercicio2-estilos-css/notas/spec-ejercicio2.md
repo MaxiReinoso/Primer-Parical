@@ -1,5 +1,7 @@
 # Especificación — Ejercicio 2: Presentación con CSS y uso adaptable
 
+> **Nota de reubicación.** Ejercicio 2 — Especificación (Fase 1). Reubicada el 2026-10-21 desde `docs/`: la spec de cada change vive en OpenSpec (ver DD-11 en `knowledge-base/09_decisiones_y_supuestos.md`).
+
 Proyecto: **Primer Parcial — Programación III: Frontend de una librería (Ejercicio 2)**
 Estado de este documento: **Fase 1 (SPEC) — decisión P1 resuelta por el usuario (Opción A: vistas apiladas), 2026-10-20. No se escribió código de producto.**
 Fecha de redacción: 2026-10-20.
@@ -33,8 +35,8 @@ Fecha de redacción: 2026-10-20.
 | `index.html` (10.358 bytes, 264 líneas) | Lectura directa completa. | Estructura de clases, ids, estados y componentes a estilizar. |
 | `css/styles.css` (148 bytes, 3 líneas) | Lectura directa. | Estado inicial: placeholder sin reglas. |
 | `js/app.js` (197 bytes, 3 líneas) | Lectura directa. | Estado inicial: placeholder sin lógica (fuera de alcance en este ejercicio). |
-| `docs/ejercicio1-spec.md` (26.390 bytes) | Lectura directa completa. | Formato, tono, convención de identificadores (R-xx / CA-xx / Pxx) y antecedente de decisiones diferidas. |
-| `docs/ejercicio1-plan.md` (14.182 bytes) | Lectura directa completa. | Convención de checklist (T-xx) y de comprobaciones para la Fase 2. |
+| `openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/spec-ejercicio1.md` (26.390 bytes) | Lectura directa completa. | Formato, tono, convención de identificadores (R-xx / CA-xx / Pxx) y antecedente de decisiones diferidas. |
+| `openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/plan-ejercicio1.md` (14.182 bytes) | Lectura directa completa. | Convención de checklist (T-xx) y de comprobaciones para la Fase 2. |
 | `docs/ejercicio1-implementacion-resumen.md` (9.844 bytes) | Lectura directa completa. | Precedente de registro de evidencia y de controles omitidos. |
 | Directorio del proyecto | PowerShell `Get-ChildItem -Recurse -File -Force` + `git log`/`git status`, 2026-10-20. | Inventario real de archivos y estado del repositorio. |
 
@@ -42,7 +44,7 @@ No se consultaron fuentes externas, documentación de terceros ni recursos en l�
 
 ### 2.2 Hechos verificados (estado del proyecto)
 
-- El directorio contiene **7 archivos** versionados: `Consigna Primer Parcial.pdf`, `index.html`, `css/styles.css`, `js/app.js`, `docs/ejercicio1-spec.md`, `docs/ejercicio1-plan.md`, `docs/ejercicio1-implementacion-resumen.md`.
+- En el momento de redactar, el directorio contenía **7 archivos** versionados: `Consigna Primer Parcial.pdf`, `index.html`, `css/styles.css`, `js/app.js`, `openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/spec-ejercicio1.md`, `openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/plan-ejercicio1.md`, `docs/ejercicio1-implementacion-resumen.md`.
 - `git log` muestra 3 commits en `main` (`4a1ae16` implementación del Ejercicio 1, `112a6ce` spec/plan/implementación, `fabeb66` spec inicial); el árbol de trabajo estaba **limpio** antes de crear este documento (la única excepción actual es este propio archivo, sin versionar).
 - `css/styles.css` contiene **solo un comentario de 3 líneas** que declara que los estilos se implementan en el Ejercicio 2. **Cero reglas CSS** en el proyecto a la fecha.
 - `js/app.js` contiene **solo un comentario de 3 líneas**. Sin lógica.
@@ -577,4 +579,4 @@ La SPEC del Ejercicio 1 (§5.1, decisión P1) había dejado esta decisión expl�
 
 ---
 
-**Fin de la Fase 1 (SPEC). No se escribió ni modificó ningún archivo de producto (`index.html`, `css/styles.css`, `js/app.js`): solo este documento en `docs/`. La decisión P1 quedó resuelta (Opción A, §9.3). El plan de la Fase 2 está en `docs/ejercicio2-plan.md`; la Fase 3 (IMPLEMENTACIÓN) requiere autorización explícita.**
+**Fin de la Fase 1 (SPEC). No se escribió ni modificó ningún archivo de producto (`index.html`, `css/styles.css`, `js/app.js`): solo este documento, que hoy vive en `openspec/changes/archive/2026-10-21-ejercicio2-estilos-css/notas/`. La decisión P1 quedó resuelta (Opción A, §9.3). El plan de la Fase 2 está en `openspec/changes/archive/2026-10-21-ejercicio2-estilos-css/notas/plan-ejercicio2.md`; la Fase 3 (IMPLEMENTACIÓN) requiere autorización explícita.**

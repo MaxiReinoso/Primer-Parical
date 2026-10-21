@@ -27,4 +27,4 @@ No hay cambios rompientes: el HTML del Ejercicio 1 no se modifica.
 - `index.html`: **sin cambios** — se verificó con `git diff` que ni una línea fue tocada. El único `<link>` sigue apuntando a `css/styles.css`, y la modularización se resolvió con `@import` justamente para no tener que agregar `<link>`.
 - `js/app.js`: sin cambios.
 - Sin dependencias, sin URLs externas, sin webfonts: la tipografía usa solo pilas del sistema.
-- Documentación de la fase: `docs/ejercicio2-spec.md`, `docs/ejercicio2-plan.md`, `docs/ejercicio2-implementacion-resumen.md`.
+- Documentación de la fase: `openspec/changes/archive/2026-10-21-ejercicio2-estilos-css/notas/spec-ejercicio2.md`, `openspec/changes/archive/2026-10-21-ejercicio2-estilos-css/notas/plan-ejercicio2.md`, `docs/ejercicio2-implementacion-resumen.md`.

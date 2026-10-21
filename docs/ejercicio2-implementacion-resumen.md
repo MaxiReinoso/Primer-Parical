@@ -1,7 +1,7 @@
 # Resumen de implementación — Ejercicio 2: Presentación con CSS y uso adaptable
 
 Proyecto: **Primer Parcial — Programación III: Frontend de una librería (Ejercicio 2)**
-Fase: **3 (IMPLEMENTACIÓN) completada** — sobre SPEC aprobada (`docs/ejercicio2-spec.md`, P1 resuelta) y PLAN aprobado (`docs/ejercicio2-plan.md`, tareas T-01…T-13).
+Fase: **3 (IMPLEMENTACIÓN) completada** — sobre SPEC aprobada (`openspec/changes/archive/2026-10-21-ejercicio2-estilos-css/notas/spec-ejercicio2.md`, P1 resuelta) y PLAN aprobado (`openspec/changes/archive/2026-10-21-ejercicio2-estilos-css/notas/plan-ejercicio2.md`, tareas T-01…T-13).
 Fecha de redacción: 2026-10-20.
 
 ## 1. Resumen de cambios
@@ -276,8 +276,8 @@ El sistema de estilos pasó de un único archivo a **tres capas más un punto de
 | `css/base.css` | **creado**: 124 líneas — tokens (`:root`, 38 declaraciones), reset y tipografía |
 | `css/layout.css` | **creado**: 112 líneas — estructura de página y composición adaptable |
 | `css/componentes.css` | **creado**: 390 líneas — componentes, foco, responsive y movimiento reducido |
-| `docs/ejercicio2-spec.md` | Fase 1 (actualizada con P1 resuelta, D1–D14 y las correcciones de la auditoría) |
-| `docs/ejercicio2-plan.md` | Fase 2 |
+| `openspec/changes/archive/2026-10-21-ejercicio2-estilos-css/notas/spec-ejercicio2.md` | Fase 1 (actualizada con P1 resuelta, D1–D14 y las correcciones de la auditoría) |
+| `openspec/changes/archive/2026-10-21-ejercicio2-estilos-css/notas/plan-ejercicio2.md` | Fase 2 |
 | `docs/ejercicio2-implementacion-resumen.md` | este archivo |
 | `index.html` | **sin cambios** |
 | `js/app.js` | **sin cambios** |

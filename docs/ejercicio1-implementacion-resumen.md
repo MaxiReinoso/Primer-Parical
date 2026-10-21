@@ -1,7 +1,7 @@
 # Resumen de implementación — Ejercicio 1: Estructura y pantallas HTML
 
 Proyecto: **Primer Parcial — Programación III: Frontend de una librería (Ejercicio 1)**
-Fase: **3 (IMPLEMENTACIÓN) completada** — sobre SPEC aprobada (`docs/ejercicio1-spec.md`) y PLAN aprobado (`docs/ejercicio1-plan.md`).
+Fase: **3 (IMPLEMENTACIÓN) completada** — sobre SPEC aprobada (`openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/spec-ejercicio1.md`) y PLAN aprobado (`openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/plan-ejercicio1.md`).
 Fecha: 2026-10-16.
 
 ## 1. Resumen de cambios
@@ -53,7 +53,7 @@ Se ejecutaron las 11 tareas del plan (T-01 a T-11). No se detectó ningún imped
 **Carga real en navegador headless (Edge, `file://`) — 8/8 APROBADOS** (DOM capturado con `--dump-dom` tras abrir `index.html`):
 h1 y 5 secciones presentes en el DOM cargado; templates inertes (0 tarjetas/filas/botones "Quitar renglón" fuera de `<template>`); visibilidad inicial de estados conservada; mensajes de historial presentes; 10.090 bytes cargados sin dependencias de red.
 
-**Existencia de archivos:** `index.html`, `css/styles.css`, `js/app.js`, `docs/ejercicio1-spec.md`, `docs/ejercicio1-plan.md` verificados en disco.
+**Existencia de archivos:** `index.html`, `css/styles.css`, `js/app.js`, `openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/spec-ejercicio1.md`, `openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/plan-ejercicio1.md` verificados en disco.
 
 ### 2.2 No ejecutadas / pendientes (NO se declaran aprobadas)
 
@@ -84,8 +84,8 @@ h1 y 5 secciones presentes en el DOM cargado; templates inertes (0 tarjetas/fila
 | `index.html` | creado (estructura completa, ~10 KB) |
 | `css/styles.css` | creado (placeholder, solo comentario) |
 | `js/app.js` | creado (placeholder, solo comentario) |
-| `docs/ejercicio1-spec.md` | Fase 1 (§9 actualizada con P1–P6 resueltas) |
-| `docs/ejercicio1-plan.md` | Fase 2 |
+| `openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/spec-ejercicio1.md` | Fase 1 (§9 actualizada con P1–P6 resueltas) |
+| `openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/plan-ejercicio1.md` | Fase 2 |
 | `docs/ejercicio1-implementacion-resumen.md` | este archivo |
 
 Fuera del proyecto (temp del sistema, no se entrega): scripts de verificación y capturas mencionados en §2.

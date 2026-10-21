@@ -30,4 +30,4 @@
 
 ## 6. Documentación
 
-- [x] 6.1 Escribir `docs/ejercicio1-spec.md`, `docs/ejercicio1-plan.md` y `docs/ejercicio1-implementacion-resumen.md` con la evidencia de la verificación
+- [x] 6.1 Escribir `openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/spec-ejercicio1.md`, `openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/plan-ejercicio1.md` y `docs/ejercicio1-implementacion-resumen.md` con la evidencia de la verificación

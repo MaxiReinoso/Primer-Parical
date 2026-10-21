@@ -1,7 +1,9 @@
 # Plan — Ejercicio 1: Estructura y pantallas HTML
 
+> **Nota de reubicación.** Ejercicio 1 — Plan (Fase 2). Reubicado el 2026-10-21 desde `docs/`: la spec de cada change vive en OpenSpec (ver DD-11 en `knowledge-base/09_decisiones_y_supuestos.md`).
+
 Proyecto: **Primer Parcial — Programación III: Frontend de una librería (Ejercicio 1)**
-Fase: **2 (PLAN)** — SPEC aprobada 2026-10-16 (ver `docs/ejercicio1-spec.md`, §9 decisiones P1–P6 resueltas).
+Fase: **2 (PLAN)** — SPEC aprobada 2026-10-16 (ver `openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/spec-ejercicio1.md`, §9 decisiones P1–P6 resueltas).
 Estado: **pendiente de aprobación para implementar. No se ejecuta ninguna tarea todavía.**
 
 ## Decisiones que gobiernan este plan (de la SPEC aprobada)
@@ -20,8 +22,8 @@ Estado: **pendiente de aprobación para implementar. No se ejecuta ninguna tarea
 | `index.html` | crear (raíz del parcial) |
 | `css/styles.css` | crear (placeholder vacío, solo comentario) |
 | `js/app.js` | crear (placeholder vacío, solo comentario) |
-| `docs/ejercicio1-spec.md` | ya creado en Fase 1 (no se modifica salvo registro de decisiones, ya hecho) |
-| `docs/ejercicio1-plan.md` | este archivo |
+| `openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/spec-ejercicio1.md` | ya creado en Fase 1 (no se modifica salvo registro de decisiones, ya hecho) |
+| `openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/plan-ejercicio1.md` | este archivo |
 | `docs/ejercicio1-implementacion-resumen.md` | crear al cierre de la Fase 3 |
 
 No se crean: imágenes, `recursos/`, README (Ej. 6), otros HTML, CSS con reglas, JS con lógica.

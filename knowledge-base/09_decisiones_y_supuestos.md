@@ -77,7 +77,7 @@
 **Contexto**: hasta el ejercicio 2 la convención fue `docs/ejercicioN-{spec,plan,implementacion-resumen}.md`, porque OpenSpec todavía no existía. Al adoptarlo, mantener las dos convenciones obligaba a escribir el mismo spec dos veces.
 **Alternativas consideradas**: (a) las dos (spec en `docs/` y en OpenSpec); (b) solo OpenSpec; (c) solo `docs/`.
 **Justificación**: (b) elimina la duplicación sin perder nada: el ciclo de OpenSpec **obliga a escribir el spec antes de codificar**, y el `tasks.md` cumple el papel de plan de trabajo. La evidencia de la verificación —que es lo que el docente lee— queda en el resumen de `docs/`, que además es donde se registra el estado por control. (c) se descartó porque no da machine-readable ni permite el flujo propose/apply/archive.
-**Trade-offs aceptados**: los ejercicios 1 y 2 quedan con la convención anterior (`docs/ejercicio{1,2}-{spec,plan,implementacion-resumen}.md`) como excepción histórica, y hay dos convenciones conviviendo en el repo durante esa transición.
+**Trade-offs aceptados**: los ejercicios 1 y 2 se implementaron antes de que existiera el ciclo, así que sus spec y plan se **reubicaron** dentro del change archivado que los produjo (`openspec/changes/archive/<change>/notas/`) en lugar de reescribirse: se conserva el detalle sin duplicar la fuente de verdad. Queda una única convención para los 6 ejercicios.
 
 ## Supuestos inferidos
 

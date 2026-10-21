@@ -107,7 +107,7 @@ Los pasos 3 a 6 los ejecuta **una persona distinta cada uno** (el equipo aún de
 > FASE cerrada. No hay trabajo pendiente. Se conserva en el roadmap como base de la que parten los demás changes.
 
 ### [C-01] `ejercicio1-estructura-html`
-- **Estado**: `[x]` **completado y verificado** — 20/20 pts. Entregado 2026-10-16. Evidencia: `docs/ejercicio1-{spec,plan,implementacion-resumen}.md`
+- **Estado**: `[x]` **completado y verificado** — 20/20 pts. Entregado 2026-10-16. Evidencia: `docs/ejercicio1-implementacion-resumen.md` + change archivado `ejercicio1-estructura-html`
 - **Scope**: Estructura HTML de la SPA de una página con las 5 vistas de la consigna
   - `index.html`: doctype, `lang="es"`, charset, `viewport`, `<title>`, `<link>` a `css/styles.css`, `<script defer>` a `js/app.js`
   - Semántica: `<header class="encabezado">` con `<h1>`, `<nav aria-label>` con los **5 enlaces-ancla** (`#catalogo`, `#libros`, `#clientes`, `#ventas`, `#historial`), `<main class="contenido">` con 5 `<section class="vista">`, `<footer class="pie">`
@@ -131,7 +131,7 @@ Los pasos 3 a 6 los ejecuta **una persona distinta cada uno** (el equipo aún de
 ---
 
 ### [C-02] `ejercicio2-estilos-css`
-- **Estado**: `[x]` **completado y verificado** — 20/20 pts. Entregado 2026-10-20. Evidencia: `docs/ejercicio2-{spec,plan,implementacion-resumen}.md`
+- **Estado**: `[x]` **completado y verificado** — 20/20 pts. Entregado 2026-10-20. Evidencia: `docs/ejercicio2-implementacion-resumen.md` + change archivado `ejercicio2-estilos-css`
 - **Scope**: Identidad visual coherente y uso adaptable, con CSS externo y modular
   - `css/styles.css`: punto de entrada, **solo** 3 `@import` relativos (`base` → `layout` → `componentes`) y 0 reglas
   - `css/base.css`: `:root` con los **38 custom properties** (12 color base, 3 derivados por `color-mix`, 6 tipografía, 8 espaciado, 4 radios, 3 sombras, 2 layout) + reset de `h1`–`h3`/`p`/`fieldset`/`legend` + `box-sizing: border-box` universal + `color-scheme: light`

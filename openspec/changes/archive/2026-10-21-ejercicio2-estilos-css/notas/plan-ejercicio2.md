@@ -1,7 +1,9 @@
 # Plan — Ejercicio 2: Presentación con CSS y uso adaptable
 
+> **Nota de reubicación.** Ejercicio 2 — Plan (Fase 2). Reubicado el 2026-10-21 desde `docs/`: la spec de cada change vive en OpenSpec (ver DD-11 en `knowledge-base/09_decisiones_y_supuestos.md`).
+
 Proyecto: **Primer Parcial — Programación III: Frontend de una librería (Ejercicio 2)**
-Fase: **2 (PLAN)** — SPEC aprobada 2026-10-20 (`docs/ejercicio2-spec.md`, §9.3 decisión P1 resuelta).
+Fase: **2 (PLAN)** — SPEC aprobada 2026-10-20 (`openspec/changes/archive/2026-10-21-ejercicio2-estilos-css/notas/spec-ejercicio2.md`, §9.3 decisión P1 resuelta).
 Estado: **pendiente de aprobación para implementar. No se ejecuta ninguna tarea todavía.**
 
 ## Decisiones que gobiernan este plan (de la SPEC aprobada)
@@ -25,8 +27,8 @@ Estado: **pendiente de aprobación para implementar. No se ejecuta ninguna tarea
 | `css/componentes.css` | **crear** — capa de componentes: componentes, foco, responsive y movimiento reducido. |
 | `index.html` | **no se toca** (ni una línea). |
 | `js/app.js` | **no se toca** (sigue siendo el placeholder). |
-| `docs/ejercicio2-spec.md` | ya creado en Fase 1 (no se modifica salvo registro de decisiones, ya hecho). |
-| `docs/ejercicio2-plan.md` | este archivo. |
+| `openspec/changes/archive/2026-10-21-ejercicio2-estilos-css/notas/spec-ejercicio2.md` | ya creado en Fase 1 (no se modifica salvo registro de decisiones, ya hecho). |
+| `openspec/changes/archive/2026-10-21-ejercicio2-estilos-css/notas/plan-ejercicio2.md` | este archivo. |
 | `docs/ejercicio2-implementacion-resumen.md` | crear al cierre de la Fase 3. |
 
 No se crean: imágenes, `recursos/`, README (Ej. 6), hojas de estilo adicionales, JS con lógica, datos de ejemplo.

@@ -13,7 +13,7 @@ La consigna del Ejercicio 1 permite "varias páginas o secciones de una misma p�
 **Consecuencias**:
 - Los enlaces-ancla funcionan **sin JavaScript**: la navegación es operativa desde la primera carga.
 - `index.html` queda como única fuente de verdad del markup, y los ejercicios 3 a 6 lo consumen sin modificarlo.
-- El mostrado exclusivo de una vista (una a la vez) queda **fuera de alcance**: con la Opción A las 5 vistas se apilan. Se evalúa en el Ejercicio 2 y se resolvió como "apiladas" (ver `docs/ejercicio2-spec.md` §9.3, decisión P1).
+- El mostrado exclusivo de una vista (una a la vez) queda **fuera de alcance**: con la Opción A las 5 vistas se apilan. Se evalúa en el Ejercicio 2 y se resolvió como "apiladas" (ver `openspec/changes/archive/2026-10-21-ejercicio2-estilos-css/notas/spec-ejercicio2.md` §9.3, decisión P1).
 
 ## Decision 2 — Anclas y convención de nombres
 
@@ -39,5 +39,5 @@ El molde de la tarjeta de libro y el de la fila de renglón viven en `<template>
 
 ## Riesgos
 
-- **Bajo**: el acoplamiento de `index.html` con el JS de los ejercicios siguientes se controla por la convención de `id` documentada en `docs/ejercicio1-spec.md` §5.3.
+- **Bajo**: el acoplamiento de `index.html` con el JS de los ejercicios siguientes se controla por la convención de `id` documentada en `openspec/changes/archive/2026-10-21-ejercicio1-estructura-html/notas/spec-ejercicio1.md` §5.3.
 - **Ninguno abierto**: el HTML es estático y no tiene dependencias.

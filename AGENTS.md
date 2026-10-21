@@ -115,7 +115,7 @@ Además, por convención del proyecto (no son reglas duras): escribir la documen
 
 **La spec no se escribe dos veces.** La spec de cada change vive **solo** en OpenSpec: el `tasks.md` es el plan de trabajo y `openspec/specs/` es el contrato. Ninguno de los dos se duplica en `docs/`. En `docs/` va **únicamente** el resumen de implementación, con la evidencia de la verificación (control por control, con estado y motivo).
 
-> **Excepción histórica:** los ejercicios 1 y 2 se implementaron antes de que existiera el ciclo de OpenSpec, y por eso tienen `docs/ejercicio{1,2}-{spec,plan,implementacion-resumen}.md`. Desde el ejercicio 3 la convención es la de esta tabla.
+> **Aplica a los 6 ejercicios por igual.** Los ejercicios 1 y 2 se implementaron antes de que existiera el ciclo de OpenSpec; su spec y su plan se reubicaron dentro del change archivado que los produjo (`openspec/changes/archive/<change>/notas/`), así que también quedan bajo una sola fuente de verdad.
 
 ## Flujo de Trabajo
 

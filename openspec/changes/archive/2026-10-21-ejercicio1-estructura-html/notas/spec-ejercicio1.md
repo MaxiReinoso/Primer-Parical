@@ -1,5 +1,7 @@
 # Especificación — Ejercicio 1: Estructura y pantallas HTML
 
+> **Nota de reubicación.** Ejercicio 1 — Especificación (Fase 1). Reubicada el 2026-10-21 desde `docs/`: la spec de cada change vive en OpenSpec (ver DD-11 en `knowledge-base/09_decisiones_y_supuestos.md`).
+
 Proyecto: **Primer Parcial — Programación III: Frontend de una librería (Ejercicio 1)**
 Estado de este documento: **Fase 1 (SPEC) — pendiente de aprobación. No se escribió código.**
 Fecha de redacción: 2026-10-16.

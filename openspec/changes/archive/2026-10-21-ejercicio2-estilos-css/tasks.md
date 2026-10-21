@@ -39,4 +39,4 @@
 
 ## 7. Documentación
 
-- [x] 7.1 Escribir `docs/ejercicio2-spec.md`, `docs/ejercicio2-plan.md` y `docs/ejercicio2-implementacion-resumen.md` con la evidencia de la verificación
+- [x] 7.1 Escribir `openspec/changes/archive/2026-10-21-ejercicio2-estilos-css/notas/spec-ejercicio2.md`, `openspec/changes/archive/2026-10-21-ejercicio2-estilos-css/notas/plan-ejercicio2.md` y `docs/ejercicio2-implementacion-resumen.md` con la evidencia de la verificación
