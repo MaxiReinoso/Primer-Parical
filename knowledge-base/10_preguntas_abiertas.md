@@ -1,0 +1,41 @@
+# Preguntas Abiertas
+
+## Inconsistencias detectadas
+
+### IN-01 — "Estilos en archivos externos": ¿uno o varios?
+**Documento A dice**: la consigna, *"El CSS se mantiene en archivos externos y se reutilizan clases para elementos equivalentes"* (plural) y el formato de entrega menciona *"carpetas de CSS, JavaScript y recursos locales"*.
+**Documento B dice**: el criterio de evaluación del ejercicio, *"Estilos estructurados en archivos externos (base, layout, componentes)"* (3 capas nombradas explícitamente), y el comentario del docente sobre otro trabajo habla de *"estilización externa y modularizada"*.
+**Impacto**: una entrega con **un solo** `styles.css` de 623 líneas cumple "externos" pero no "modularizada en base, layout y componentes" leído en plural. Es la diferencia entre 8/8 y un punto menos en C2.1.
+**Resolución propuesta**: **resuelta** — se modularizó en `base.css` + `layout.css` + `componentes.css`, con `styles.css` como punto de entrada, sin modificar `index.html`. Verificado: equivalencia de reglas 68 ↔ 68 y render idéntico. Registrado como DD-03.
+
+### IN-02 — El conteo de clases del HTML
+**Documento A dice**: una primera versión de la SPEC afirmaba *"45 clases"* en `index.html`.
+**Documento B dice**: el conteo real es **38 clases distintas** (86 atributos `class`, 100 tokens).
+**Impacto**: la cifra errónea se repitió en 7 lugares de la SPEC y sugería que faltaban 7 clases en el mapa de componentes.
+**Resolución propuesta**: **resuelta** — corregido a 38 y el mapa §5.4 pasó a sumar exactamente 38. Detectado por auditoría independiente de la SPEC.
+
+### IN-03 — La consigna menciona imágenes, el proyecto no tiene ninguna
+**Documento A dice**: la consigna, *"Las imágenes informativas tienen texto alternativo; las decorativas no repiten información innecesaria"*.
+**Documento B dice**: el proyecto tiene **cero** imágenes: no hay `<img>`, ni `background-image`, ni `url()`.
+**Impacto**: el requisito de texto alternativo queda **vacuo**. Declararlo "aprobado" por el solo hecho de tener 0 imágenes sería una afirmación falsa; declararlo "fallido" tampoco corresponde.
+**Resolución propuesta**: **resuelta** — se declara explícitamente **vacuo** en la SPEC §9 (S3) y en el resumen de implementación, no como aprobado.
+
+## Preguntas abiertas (priorizadas)
+
+| Prioridad | Pregunta | Bloquea | Decisor |
+|---|---|---|---|
+| Alta | ¿Qué motor de render se usa para la verificación? Hoy hay **uno solo** (Edge headless) y el resto queda OMITIDO con su motivo. Instalar un segundo motor (hay `winget` y `choco`) cerraría ese control. | Cierre de la verificación del Ejercicio 2 | Docente / equipo |
+| Alta | ¿Quién ejecuta cada change? Los 6 changes están creados en estado *propose*; falta asignar responsable por change para evitar que dos personas toquen `js/app.js` a la vez. | Ejercicios 3–6 | Equipo |
+| Media | ¿El `README.md` (Ejercicio 6) lo escribe quien ejecute ese change, o se prepara ahora con lo ya verificado? | Ejercicio 6 | Equipo |
+| Media | ¿La KB y el `CHANGES.md` se versionan en el repo o viven solo en la máquina? Hoy están en el repo, en el mismo commit que el resto. | Entrega | Docente |
+| Media | ¿Conviene agregar casos manuales del Ejercicio 6 (pág. 5 de la consigna) como change aparte, o forman parte del change de persistencia? | Ejercicio 6 | Equipo |
+| Baja | ¿Se documentará en el README la procedencia de imágenes ajenas? La consigna lo pide "si existen"; en este proyecto no existen. | Ejercicio 6 | Equipo |
+| Baja | ¿El `change` del Ejercicio 6 debe además cubrir la "comprobación guiada del precio histórico" que la consigna describe paso a paso? | Ejercicio 6 | Docente |
+
+## Supuestos no verificables con las fuentes actuales
+
+| Supuesto | Por qué no se puede confirmar | Qué lo confirmaría |
+|---|---|---|
+| Que la estructura de "un change por ejercicio" es la que espera el docente | Las pautas de evaluación recibidas no mencionan OpenSpec ni changes | La confirmación del equipo / del docente |
+| Que los compañeros trabajarán con el CLI `openspec` y no solo con los documentos de `docs/` | No hay evidencia en el repositorio | La práctica del equipo al tomar su change |
+| Que la base de conocimiento no debe filtrarse al docente como documentación de producto | La consigna no menciona KB | La decisión del equipo |

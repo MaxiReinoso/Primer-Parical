@@ -1,0 +1,85 @@
+schema: spec-driven
+
+# Contexto del proyecto: lo lee el agente al crear artefactos de un change.
+context: |
+  Proyecto: "Librería El Estante" — parcial de Programación III (100 puntos, 6 ejercicios).
+  Frontend de una librería: catálogo de libros, alta de libros y clientes, venta
+  simulada e historial. Todos los datos son ficticios y viven en el navegador.
+
+  Stack: HTML5 semántico + CSS3 (custom properties, Flexbox, Grid) + JavaScript
+  nativo (ES6+, DOM, eventos, localStorage). SIN frameworks, SIN backend, SIN build,
+  SIN CDN, SIN npm. La consigna PROHÍBE las librerías: usarlas incumple el alcance
+  técnico. El proyecto se abre con doble clic desde file:// y debe funcionar sin
+  conexión a internet.
+
+  Archivos y su dueño:
+  - index.html   -> dueño: C-01 (ejercicio1). CONGELADO: los changes siguientes lo
+                     consumen, no lo modifican.
+  - css/         -> dueño: C-02 (ejercicio2). 4 archivos: styles.css (punto de
+                     entrada, 3 @import), base.css, layout.css, componentes.css.
+                     Los changes siguientes AGREGAN estilos, no redefinen los existentes.
+  - js/app.js    -> compartido por C-03, C-04, C-05 y C-06. Por eso el paralelismo
+                     entre esos changes es LÓGICO, no de escritura concurrente: el
+                     merge se serializa C-03 -> C-04/C-05 -> C-06.
+  - README.md    -> dueño: C-06 (ejercicio6).
+  - docs/        -> un spec, un plan y un resumen de implementación por ejercicio.
+  - knowledge-base/ -> base de conocimiento del proyecto (13 archivos). Es la fuente
+                     de verdad del dominio; las reglas de negocio están codificadas
+                     como RN-{DOMINIO}-{NN} en knowledge-base/05_reglas_de_negocio.md.
+  - CHANGES.md   -> roadmap e índice de los 6 changes, con camino crítico y gates.
+
+  Convenciones (ver knowledge-base/08_arquitectura_propuesta.md y
+  09_decisiones_y_supuestos.md):
+  - BEM en español: bloque.elemento__parte y bloque--variante (p. ej. .libro__titulo,
+    .boton--quitar, .fila-renglon__acciones).
+  - Los tokens de :root son la única fuente de valores de color, tipografía,
+    espaciado, radios y sombras. Nunca se escribe un literal fuera de :root.
+  - Verificación en tres capas, sin framework de tests: (a) controles automatizables
+    de solo lectura, (b) comprobación real en navegador, (c) registro de evidencia por
+    control con estado {aprobado, fallido, omitido, pendiente}. NINGÚN control no
+    ejecutado se presenta como aprobado.
+  - En la medición headless, Edge impone un ancho mínimo de ventana de 492 px: para
+    medir 320 px hay que usar un arnés de <iframe>. Y el script de medición no puede
+    inyectar un <pre> en la página medida (ensancha el documento y da un
+    scrollWidth falso).
+  - Prohibido: outline: none, display:flex sobre un td, selectores por id usados
+    para estilo, CSS inline, !important fuera del bloque justificado de
+    prefers-reduced-motion, y cualquier URL externa.
+  - Los datos escritos por el usuario se insertan COMO TEXTO en el DOM.
+
+  Cómo trabajar un change:
+  1. Tomar el change asignado en CHANGES.md.
+  2. /opsx:propose <nombre-del-change>  -> genera proposal.md, specs/<capability>/spec.md,
+     design.md y tasks.md. La sección Capabilities del proposal es la que crea el
+     contrato con la fase de specs: cada capability necesita su delta spec con
+     "## ADDED Requirements" y al menos un "#### Scenario:" con WHEN/THEN.
+  3. /opsx:apply <nombre-del-change>    -> ejecuta las tareas de tasks.md.
+  4. /opsx:archive <nombre-del-change>  -> baja los delta specs a openspec/specs/.
+
+rules:
+  proposal:
+    - "Escribí en español rioplatense, con la terminología del proyecto."
+    - "La sección Capabilities es obligatoria: lista las capabilities nuevas (kebab-case) y las modificadas. Sin capabilities, el change necesita skip_specs: true."
+    - "No inventes funcionalidad: todo alcance se ancla en knowledge-base/05_reglas_de_negocio.md o en knowledge-base/11_criterios_evaluacion.md."
+  specs:
+    - "Cada requirement lleva al menos un scenario con WHEN/THEN observable."
+    - "Usá DEBE / NO DEBE. El validador emite un warning RFC-2119 por buscar MUST en inglés; el proyecto está en español y DEBE es su equivalente correcto."
+  design:
+    - "Registrá las decisiones con su contexto, las alternativas descartadas y los trade-offs aceptados."
+    - "Si una decisión quedó abierta, marcala como pregunta abierta en lugar de resolverla por tu cuenta."
+  tasks:
+    - "Cada tarea es un checkbox '- [ ] X.Y descripción' y debe decir CÓMO se verifica que quedó terminada."
+    - "Declarar explícitamente qué archivos puede tocar el change, para no pisar el trabajo de otro integrante."
+
+operations:
+  apply:
+    guidance: |
+      - No toques index.html ni css/ salvo que el change lo declare: son de C-01 y C-02.
+      - Antes de dar por terminada una tarea, corré su comprobación. La consigna exige
+        no indicar ninguna prueba como aprobada sin ejecutarla.
+      - Si aparece un impedimento o una contradicción que cambie la solución aprobada,
+        informalo y consultá antes de ampliar el alcance.
+  archive:
+    guidance: |
+      - Verificá que el change pasa `openspec validate --changes` antes de archivar.
+      - Registrá en el resumen de implementación el estado de cada control.

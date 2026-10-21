@@ -1,0 +1,23 @@
+# Registro de skills del proyecto (.atl/skill-registry.md)
+# Se genera con la skill `skill-registry` y NO se versiona: es un indice
+# local de las skills instaladas en la maquina de cada agente, distinto en
+# cada una. Los compact rules se resuelven en runtime desde ese archivo.
+.atl/
+
+# Entorno de Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Sistema operativo / editores
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Herramientas locales de verificacion (viven en la carpeta temporal del
+# sistema; el proyecto NO incluye herramientas ni dependencias).
+.verif/
+*.log
