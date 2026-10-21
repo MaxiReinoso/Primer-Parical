@@ -159,6 +159,9 @@
           <button type="button" id="boton-agregar-renglon" class="boton">Agregar renglón</button>
         </fieldset>
 
+        <p id="renglon-mensaje-exito" class="mensaje mensaje--exito" role="status" hidden>Renglón agregado a la venta.</p>
+        <p id="renglon-mensaje-error" class="mensaje mensaje--error" role="alert" hidden>No se pudo agregar el renglón. Revisá los datos.</p>
+
         <div class="tabla-contenedor" role="region" aria-label="Renglones de la venta en curso" tabindex="0">
           <table id="tabla-renglones" class="tabla">
             <thead>
@@ -205,6 +208,8 @@
       <p id="historial-vacio" class="mensaje mensaje--vacio">No hay ventas registradas.</p>
 
       <div id="historial-detalle" class="detalle-venta" role="region" aria-label="Detalle de la venta seleccionada">
+        <p id="historial-detalle-resumen" class="detalle-venta__resumen" hidden></p>
+
         <p id="historial-detalle-vacio" class="mensaje mensaje--vacio">Seleccioná una venta para ver su detalle.</p>
 
         <div class="tabla-contenedor" role="region" aria-label="Renglones de la venta seleccionada" tabindex="0">

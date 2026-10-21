@@ -4,6 +4,11 @@ Proyecto: **Primer Parcial — Programación III: Frontend de una librería (Eje
 Fase: **3 (IMPLEMENTACIÓN) completada** — sobre SPEC aprobada (`openspec/changes/frontend-libreria/spec.md`) y PLAN aprobado (`openspec/changes/frontend-libreria/plan.md`).
 Fecha: 2026-10-20.
 
+> **Aclaración posterior (2026-10-21, Ejercicio 5).** El conjunto inicial de datos pasó de 6 a 8
+> libros y de 3 a 4 autores, para poder reproducir con los datos del proyecto el caso manual de la
+> consigna «dos unidades a 1500 y una a 2000». Los conteos y las cifras de esta tabla corresponden al
+> estado del Ejercicio 3. El detalle del cambio está en `docs/ejercicio5-implementacion-resumen.md`.
+
 ---
 
 ## 1. Resumen de cambios

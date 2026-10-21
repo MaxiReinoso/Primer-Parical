@@ -1,5 +1,5 @@
-// Librería El Estante — lógica de la aplicación (Ejercicio 3 + 4)
-// Catálogo dinámico, filtro por título, alta de libros y clientes
+// Librería El Estante — lógica de la aplicación (Ejercicio 3 + 4 + 5)
+// Catálogo dinámico, filtro por título, alta de libros y clientes, venta e historial
 
 // ============================================================
 // 1. DATOS FICTICIOS EN MEMORIA
@@ -18,7 +18,8 @@ const generos = [
 const autores = [
   { id: 1, nombre: "Antoine de Saint-Exupéry" },
   { id: 2, nombre: "J.R.R. Tolkien" },
-  { id: 3, nombre: "George Orwell" }
+  { id: 3, nombre: "George Orwell" },
+  { id: 4, nombre: "Julio Cortázar" }
 ];
 
 const libros = [
@@ -27,7 +28,11 @@ const libros = [
   { id: 3, titulo: "1984", isbn: "978-84-9759-327-5", precio: 14500, editorialId: 1, generoId: 1, autoresIds: [3] },
   { id: 4, titulo: "Rebelión en la granja", isbn: "978-84-450-0123-4", precio: 11200, editorialId: 2, generoId: 1, autoresIds: [3] },
   { id: 5, titulo: "El Silmarillion", isbn: "978-84-450-7128-1", precio: 22000, editorialId: 1, generoId: 1, autoresIds: [2] },
-  { id: 6, titulo: "Carta a un niño que nunca nació", isbn: "978-950-731-123-4", precio: 9800, editorialId: 2, generoId: 2, autoresIds: [1] }
+  { id: 6, titulo: "Carta a un niño que nunca nació", isbn: "978-950-731-123-4", precio: 9800, editorialId: 2, generoId: 2, autoresIds: [1] },
+  // Libros agregados en el Ejercicio 5 con precios que permiten reproducir el
+  // caso manual de la consigna "dos unidades a 1500 y una a 2000".
+  { id: 7, titulo: "Rayuela", isbn: "978-843760457-2", precio: 2000, editorialId: 2, generoId: 1, autoresIds: [4] },
+  { id: 8, titulo: "Cuentos de la selva", isbn: "978-950-654321-5", precio: 1500, editorialId: 1, generoId: 1, autoresIds: [1] }
 ];
 
 const clientes = [
@@ -335,6 +340,22 @@ function validarFormularioCliente(datos) {
 // ============================================================
 
 /**
+ * Crea la fila que se muestra cuando una tabla no tiene datos que mostrar.
+ * @param {number} colspan - Cantidad de columnas que ocupa la fila
+ * @param {string} texto - Mensaje visible para el usuario
+ * @returns {HTMLTableRowElement}
+ */
+function crearFilaVacia(colspan, texto) {
+  const tr = document.createElement("tr");
+  const td = document.createElement("td");
+  td.colSpan = colspan;
+  td.className = "tabla__vacia";
+  td.textContent = texto;
+  tr.appendChild(td);
+  return tr;
+}
+
+/**
  * Renderiza la tabla de libros en #tabla-libros tbody
  */
 function renderTablaLibros() {
@@ -344,14 +365,7 @@ function renderTablaLibros() {
   tbody.innerHTML = "";
 
   if (libros.length === 0) {
-    const tr = document.createElement("tr");
-    const td = document.createElement("td");
-    td.colSpan = 6;
-    td.textContent = "No hay libros registrados.";
-    td.style.textAlign = "center";
-    td.style.padding = "1rem";
-    tr.appendChild(td);
-    tbody.appendChild(tr);
+    tbody.appendChild(crearFilaVacia(6, "No hay libros registrados."));
     return;
   }
 
@@ -391,14 +405,7 @@ function renderTablaClientes() {
   tbody.innerHTML = "";
 
   if (clientes.length === 0) {
-    const tr = document.createElement("tr");
-    const td = document.createElement("td");
-    td.colSpan = 2;
-    td.textContent = "No hay clientes registrados.";
-    td.style.textAlign = "center";
-    td.style.padding = "1rem";
-    tr.appendChild(td);
-    tbody.appendChild(tr);
+    tbody.appendChild(crearFilaVacia(2, "No hay clientes registrados."));
     return;
   }
 
@@ -671,7 +678,554 @@ function filtrarPorTitulo(consulta) {
 }
 
 // ============================================================
-// 9. INICIALIZACIÓN
+// 9. ESTADO DE VENTAS Y CÁLCULOS (Ejercicio 5)
+// ============================================================
+
+// Ventas confirmadas. Cada venta guarda sus propios importes: el precio
+// unitario se copia al renglón como valor histórico y no vuelve a leerse
+// del catálogo al consultar el historial.
+const ventas = [];
+
+// Renglones de la venta en curso, todavía sin confirmar.
+let renglonesVenta = [];
+
+// Índice del renglón que se está editando (cantidad), o null si no hay edición.
+let indiceRenglonEnEdicion = null;
+
+/**
+ * Calcula el subtotal de un renglón: cantidad × precio unitario.
+ * @param {Object} renglon
+ * @returns {number}
+ */
+function calcularSubtotal(renglon) {
+  return renglon.cantidad * renglon.precioUnitario;
+}
+
+/**
+ * Calcula el total de una venta: suma de los subtotales de sus renglones.
+ * @param {Object[]} renglones
+ * @returns {number}
+ */
+function calcularTotal(renglones) {
+  return renglones.reduce((total, renglon) => total + calcularSubtotal(renglon), 0);
+}
+
+/**
+ * Crea un renglón a partir de un libro del catálogo.
+ * El precio unitario se COPIA desde el catálogo: a partir de este momento
+ * el renglón conserva ese valor aunque el precio del libro cambie.
+ * @param {Object} libro
+ * @param {number} cantidad
+ * @returns {Object}
+ */
+function crearRenglon(libro, cantidad) {
+  return {
+    libroId: libro.id,
+    titulo: libro.titulo,
+    cantidad,
+    precioUnitario: libro.precio
+  };
+}
+
+/**
+ * Busca el renglón de un libro dentro de la venta en curso.
+ * @param {number} libroId
+ * @returns {Object|undefined}
+ */
+function buscarRenglon(libroId) {
+  return renglonesVenta.find(renglon => renglon.libroId === libroId);
+}
+
+/**
+ * Formatea el identificador numérico de una venta como código de negocio.
+ * @param {number} id
+ * @returns {string}
+ */
+function formatearCodigoVenta(id) {
+  return `V-${String(id).padStart(3, "0")}`;
+}
+
+/**
+ * Formatea una fecha ISO como fecha y hora legibles.
+ * @param {string} fechaIso
+ * @returns {string}
+ */
+function formatearFecha(fechaIso) {
+  const fecha = new Date(fechaIso);
+  if (isNaN(fecha.getTime())) return "";
+  return fecha.toLocaleString("es-AR", {
+    dateStyle: "short",
+    timeStyle: "short"
+  });
+}
+
+// ============================================================
+// 10. VALIDACIONES DE VENTA (Ejercicio 5)
+// ============================================================
+
+/**
+ * Valida los datos de un renglón antes de agregarlo a la venta.
+ * @param {{libroId: string, cantidad: string}} datos
+ * @returns {{valido: boolean, errores: string[]}}
+ */
+function validarRenglon(datos) {
+  const errores = [];
+
+  // 1. Libro seleccionado y existente en el catálogo
+  const libroId = Number(datos.libroId);
+  if (!libroId || isNaN(libroId)) {
+    errores.push("Seleccioná un libro.");
+  } else if (!libros.some(libro => libro.id === libroId)) {
+    errores.push("El libro seleccionado no existe en el catálogo.");
+  }
+
+  // 2. Cantidad presente, entera y mayor que cero
+  const cantidadCruda = (datos.cantidad ?? "").toString().trim();
+  const cantidad = Number(cantidadCruda);
+  if (cantidadCruda === "") {
+    errores.push("Ingresá una cantidad.");
+  } else if (!Number.isInteger(cantidad)) {
+    errores.push("La cantidad debe ser un número entero.");
+  } else if (cantidad <= 0) {
+    errores.push("La cantidad debe ser mayor que cero.");
+  }
+
+  return {
+    valido: errores.length === 0,
+    errores
+  };
+}
+
+/**
+ * Valida la venta completa antes de confirmarla.
+ * @param {{clienteId: string}} datos
+ * @returns {{valido: boolean, errores: string[]}}
+ */
+function validarVenta(datos) {
+  const errores = [];
+
+  // 1. Cliente seleccionado y existente en los datos locales
+  const clienteId = Number(datos.clienteId);
+  if (!clienteId || isNaN(clienteId)) {
+    errores.push("Seleccioná un cliente.");
+  } else if (!clientes.some(cliente => cliente.id === clienteId)) {
+    errores.push("El cliente seleccionado no existe.");
+  }
+
+  // 2. Al menos un renglón
+  if (renglonesVenta.length === 0) {
+    errores.push("Agregá al menos un renglón a la venta.");
+  }
+
+  // 3. Todas las cantidades válidas
+  const hayCantidadInvalida = renglonesVenta.some(
+    renglon => !Number.isInteger(renglon.cantidad) || renglon.cantidad <= 0
+  );
+  if (hayCantidadInvalida) {
+    errores.push("Todas las cantidades deben ser números enteros mayores que cero.");
+  }
+
+  return {
+    valido: errores.length === 0,
+    errores
+  };
+}
+
+// ============================================================
+// 11. RENDER DE VENTAS E HISTORIAL (Ejercicio 5)
+// ============================================================
+
+/**
+ * Muestra un mensaje junto al área de renglones.
+ * @param {string} texto
+ * @param {boolean} esError
+ */
+function mostrarMensajeRenglon(texto, esError) {
+  const exito = document.getElementById("renglon-mensaje-exito");
+  const error = document.getElementById("renglon-mensaje-error");
+
+  if (exito) exito.hidden = true;
+  if (error) error.hidden = true;
+
+  const destino = esError ? error : exito;
+  if (destino) {
+    destino.textContent = texto;
+    destino.hidden = false;
+  }
+}
+
+/**
+ * Renderiza la tabla de renglones de la venta en curso.
+ * Si un renglón está en edición, su celda de cantidad muestra un input.
+ */
+function renderTablaRenglones() {
+  const tbody = document.querySelector("#tabla-renglones tbody");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  if (renglonesVenta.length === 0) {
+    tbody.appendChild(crearFilaVacia(5, "Todavía no agregaste renglones a la venta."));
+    renderTotalVenta();
+    return;
+  }
+
+  const plantilla = document.getElementById("plantilla-renglon");
+  if (!plantilla) {
+    console.error("Plantilla #plantilla-renglon no encontrada");
+    return;
+  }
+
+  renglonesVenta.forEach((renglon, indice) => {
+    const fragment = plantilla.content.cloneNode(true);
+    const fila = fragment.querySelector(".fila-renglon");
+    if (!fila) return;
+
+    const enEdicion = indice === indiceRenglonEnEdicion;
+
+    fila.querySelector(".fila-renglon__libro").textContent = renglon.titulo;
+
+    const celdaCantidad = fila.querySelector(".fila-renglon__cantidad");
+    if (enEdicion) {
+      celdaCantidad.textContent = "";
+      const input = document.createElement("input");
+      input.type = "number";
+      input.min = "1";
+      input.step = "1";
+      input.className = "renglon-cantidad-input";
+      input.value = String(renglon.cantidad);
+      input.setAttribute("aria-label", `Cantidad de ${renglon.titulo}`);
+      input.addEventListener("keydown", evento => {
+        if (evento.key === "Enter") {
+          evento.preventDefault();
+          handleGuardarCantidad(indice, fila);
+        }
+      });
+      celdaCantidad.appendChild(input);
+    } else {
+      celdaCantidad.textContent = renglon.cantidad;
+    }
+
+    fila.querySelector(".fila-renglon__precio-unitario").textContent = formatearPrecio(renglon.precioUnitario);
+    fila.querySelector(".fila-renglon__subtotal").textContent = formatearPrecio(calcularSubtotal(renglon));
+
+    const celdaAcciones = fila.querySelector(".fila-renglon__acciones");
+
+    const botonQuitar = celdaAcciones.querySelector(".boton--quitar");
+    botonQuitar.addEventListener("click", () => handleQuitarRenglon(indice));
+
+    const botonModificar = celdaAcciones.querySelector(".boton--modificar");
+    if (enEdicion) {
+      botonModificar.textContent = "Guardar cantidad";
+      botonModificar.classList.remove("boton--modificar");
+      botonModificar.classList.add("boton--guardar");
+      botonModificar.addEventListener("click", () => handleGuardarCantidad(indice, fila));
+
+      const botonCancelar = document.createElement("button");
+      botonCancelar.type = "button";
+      botonCancelar.className = "boton boton--secundario";
+      botonCancelar.textContent = "Cancelar";
+      botonCancelar.addEventListener("click", handleCancelarEdicion);
+      celdaAcciones.appendChild(botonCancelar);
+    } else {
+      botonModificar.addEventListener("click", () => handleModificarRenglon(indice));
+    }
+
+    tbody.appendChild(fragment);
+  });
+
+  renderTotalVenta();
+}
+
+/**
+ * Actualiza el total de la venta en curso.
+ */
+function renderTotalVenta() {
+  const output = document.getElementById("venta-total");
+  if (!output) return;
+  output.textContent = formatearPrecio(calcularTotal(renglonesVenta));
+}
+
+/**
+ * Renderiza la tabla del historial de ventas confirmadas.
+ * Las ventas no se editan ni se eliminan: solo se consultan.
+ */
+function renderTablaHistorial() {
+  const tbody = document.querySelector("#tabla-historial tbody");
+  const vacio = document.getElementById("historial-vacio");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  if (ventas.length === 0) {
+    if (vacio) vacio.hidden = false;
+    return;
+  }
+
+  if (vacio) vacio.hidden = true;
+
+  // La venta más reciente aparece primero.
+  const ventasOrdenadas = [...ventas].reverse();
+
+  for (const venta of ventasOrdenadas) {
+    const tr = document.createElement("tr");
+
+    const tdId = document.createElement("td");
+    tdId.textContent = formatearCodigoVenta(venta.id);
+
+    const tdFecha = document.createElement("td");
+    tdFecha.textContent = formatearFecha(venta.fecha);
+
+    const tdCliente = document.createElement("td");
+    tdCliente.textContent = venta.clienteNombre;
+
+    const tdTotal = document.createElement("td");
+    tdTotal.textContent = formatearPrecio(venta.total);
+
+    const tdAcciones = document.createElement("td");
+    tdAcciones.className = "historial__acciones";
+    const botonDetalle = document.createElement("button");
+    botonDetalle.type = "button";
+    botonDetalle.className = "boton boton--secundario";
+    botonDetalle.textContent = "Ver detalle";
+    botonDetalle.setAttribute("aria-label", `Ver detalle de la venta ${formatearCodigoVenta(venta.id)}`);
+    botonDetalle.addEventListener("click", () => renderDetalleVenta(venta));
+    tdAcciones.appendChild(botonDetalle);
+
+    tr.append(tdId, tdFecha, tdCliente, tdTotal, tdAcciones);
+    tbody.appendChild(tr);
+  }
+}
+
+/**
+ * Muestra el detalle de una venta: encabezado y renglones.
+ * Los importes salen de la venta guardada, nunca del catálogo actual.
+ * @param {Object|null} venta
+ */
+function renderDetalleVenta(venta) {
+  const tbody = document.querySelector("#tabla-detalle tbody");
+  const vacio = document.getElementById("historial-detalle-vacio");
+  const resumen = document.getElementById("historial-detalle-resumen");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+
+  if (!venta) {
+    if (vacio) vacio.hidden = false;
+    if (resumen) {
+      resumen.textContent = "";
+      resumen.hidden = true;
+    }
+    return;
+  }
+
+  if (vacio) vacio.hidden = true;
+
+  if (resumen) {
+    resumen.hidden = false;
+    resumen.textContent =
+      `Venta ${formatearCodigoVenta(venta.id)} — ${formatearFecha(venta.fecha)} — ` +
+      `${venta.clienteNombre} — Total ${formatearPrecio(venta.total)}`;
+  }
+
+  for (const renglon of venta.renglones) {
+    const tr = document.createElement("tr");
+
+    const tdLibro = document.createElement("td");
+    tdLibro.textContent = renglon.titulo;
+
+    const tdCantidad = document.createElement("td");
+    tdCantidad.textContent = renglon.cantidad;
+
+    const tdPrecioUnitario = document.createElement("td");
+    tdPrecioUnitario.textContent = formatearPrecio(renglon.precioUnitario);
+
+    const tdSubtotal = document.createElement("td");
+    tdSubtotal.textContent = formatearPrecio(renglon.subtotal);
+
+    tr.append(tdLibro, tdCantidad, tdPrecioUnitario, tdSubtotal);
+    tbody.appendChild(tr);
+  }
+}
+
+// ============================================================
+// 12. HANDLERS DE VENTA E HISTORIAL (Ejercicio 5)
+// ============================================================
+
+/**
+ * Agrega un renglón a la venta en curso.
+ * Si el libro ya está en la venta, se modifica la cantidad del renglón
+ * existente en lugar de crear un renglón repetido.
+ */
+function handleAgregarRenglon() {
+  const selectLibro = document.getElementById("renglon-libro");
+  const inputCantidad = document.getElementById("renglon-cantidad");
+  if (!selectLibro || !inputCantidad) return;
+
+  const datos = {
+    libroId: selectLibro.value,
+    cantidad: inputCantidad.value.trim()
+  };
+
+  const { valido, errores } = validarRenglon(datos);
+  if (!valido) {
+    mostrarMensajeRenglon(errores.join(" "), true);
+    return;
+  }
+
+  const libro = libros.find(item => item.id === Number(datos.libroId));
+  const cantidad = Number(datos.cantidad);
+  const renglonExistente = buscarRenglon(libro.id);
+
+  if (renglonExistente) {
+    renglonExistente.cantidad += cantidad;
+  } else {
+    renglonesVenta.push(crearRenglon(libro, cantidad));
+  }
+
+  indiceRenglonEnEdicion = null;
+  inputCantidad.value = "";
+  renderTablaRenglones();
+
+  if (renglonExistente) {
+    mostrarMensajeRenglon(
+      `«${libro.titulo}» ya estaba en la venta: se sumó la cantidad al renglón existente.`,
+      false
+    );
+  } else {
+    mostrarMensajeRenglon(`Renglón agregado: ${libro.titulo}.`, false);
+  }
+}
+
+/**
+ * Quita un renglón de la venta en curso.
+ * @param {number} indice
+ */
+function handleQuitarRenglon(indice) {
+  const renglon = renglonesVenta[indice];
+  if (!renglon) return;
+
+  renglonesVenta.splice(indice, 1);
+
+  if (indiceRenglonEnEdicion === indice) {
+    indiceRenglonEnEdicion = null;
+  } else if (indiceRenglonEnEdicion !== null && indiceRenglonEnEdicion > indice) {
+    indiceRenglonEnEdicion -= 1;
+  }
+
+  renderTablaRenglones();
+  mostrarMensajeRenglon(`Renglón quitado: ${renglon.titulo}.`, false);
+}
+
+/**
+ * Pone un renglón en modo edición para cambiar su cantidad.
+ * @param {number} indice
+ */
+function handleModificarRenglon(indice) {
+  indiceRenglonEnEdicion = indice;
+  renderTablaRenglones();
+
+  const input = document.querySelector("#tabla-renglones .renglon-cantidad-input");
+  if (input) {
+    input.focus();
+    input.select();
+  }
+}
+
+/**
+ * Guarda la cantidad editada de un renglón.
+ * @param {number} indice
+ * @param {HTMLElement} fila - Fila del renglón en edición
+ */
+function handleGuardarCantidad(indice, fila) {
+  const input = fila.querySelector(".renglon-cantidad-input");
+  const valor = input ? input.value.trim() : "";
+  const cantidad = Number(valor);
+
+  if (valor === "" || !Number.isInteger(cantidad) || cantidad <= 0) {
+    mostrarMensajeRenglon("La cantidad debe ser un número entero mayor que cero.", true);
+    return;
+  }
+
+  renglonesVenta[indice].cantidad = cantidad;
+  indiceRenglonEnEdicion = null;
+  renderTablaRenglones();
+  mostrarMensajeRenglon("Cantidad actualizada.", false);
+}
+
+/**
+ * Cancela la edición de la cantidad de un renglón.
+ */
+function handleCancelarEdicion() {
+  indiceRenglonEnEdicion = null;
+  renderTablaRenglones();
+}
+
+/**
+ * Confirma la venta: la registra en el historial y limpia el formulario.
+ * @param {Event} evento
+ */
+function handleSubmitVenta(evento) {
+  evento.preventDefault();
+
+  const form = evento.target;
+  const mensajeExito = document.getElementById("venta-mensaje-exito");
+  const mensajeError = document.getElementById("venta-mensaje-error");
+
+  if (mensajeExito) mensajeExito.hidden = true;
+  if (mensajeError) mensajeError.hidden = true;
+
+  const selectCliente = document.getElementById("venta-cliente");
+  const clienteId = selectCliente ? selectCliente.value : "";
+
+  const { valido, errores } = validarVenta({ clienteId });
+  if (!valido) {
+    if (mensajeError) {
+      mensajeError.textContent = errores.join(" ");
+      mensajeError.hidden = false;
+    }
+    return;
+  }
+
+  const cliente = clientes.find(item => item.id === Number(clienteId));
+
+  const venta = {
+    id: generarId(ventas),
+    fecha: new Date().toISOString(),
+    clienteId: cliente.id,
+    clienteNombre: cliente.nombre,
+    clienteEmail: cliente.email,
+    renglones: renglonesVenta.map(renglon => ({
+      libroId: renglon.libroId,
+      titulo: renglon.titulo,
+      cantidad: renglon.cantidad,
+      precioUnitario: renglon.precioUnitario,
+      subtotal: calcularSubtotal(renglon)
+    })),
+    total: calcularTotal(renglonesVenta)
+  };
+
+  ventas.push(venta);
+
+  // Limpiar la venta en curso para poder cargar una nueva.
+  renglonesVenta = [];
+  indiceRenglonEnEdicion = null;
+  form.reset();
+  renderTablaRenglones();
+  renderTotalVenta();
+
+  // Refrescar el historial y mostrar el detalle de la venta recién confirmada.
+  renderTablaHistorial();
+  renderDetalleVenta(venta);
+
+  if (mensajeExito) {
+    mensajeExito.textContent = `Venta registrada correctamente. Identificador ${formatearCodigoVenta(venta.id)}.`;
+    mensajeExito.hidden = false;
+  }
+}
+
+// ============================================================
+// 13. INICIALIZACIÓN
 // ============================================================
 
 /**
@@ -709,6 +1263,34 @@ function inicializar() {
   if (formCliente) {
     formCliente.addEventListener("submit", handleSubmitCliente);
   }
+
+  // Listeners de venta (Ej. 5)
+  const formVenta = document.getElementById("form-venta");
+  if (formVenta) {
+    formVenta.addEventListener("submit", handleSubmitVenta);
+  }
+
+  const botonAgregarRenglon = document.getElementById("boton-agregar-renglon");
+  if (botonAgregarRenglon) {
+    botonAgregarRenglon.addEventListener("click", handleAgregarRenglon);
+  }
+
+  // Enter en la cantidad agrega el renglón en lugar de confirmar la venta.
+  const inputCantidad = document.getElementById("renglon-cantidad");
+  if (inputCantidad) {
+    inputCantidad.addEventListener("keydown", evento => {
+      if (evento.key === "Enter") {
+        evento.preventDefault();
+        handleAgregarRenglon();
+      }
+    });
+  }
+
+  // Render inicial de venta e historial (Ej. 5)
+  renderTablaRenglones();
+  renderTotalVenta();
+  renderTablaHistorial();
+  renderDetalleVenta(null);
 }
 
 // Auto-ejecutar al cargar el DOM
