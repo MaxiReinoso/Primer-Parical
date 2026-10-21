@@ -20,6 +20,12 @@
 **Impacto**: el requisito de texto alternativo queda **vacuo**. Declararlo "aprobado" por el solo hecho de tener 0 imágenes sería una afirmación falsa; declararlo "fallido" tampoco corresponde.
 **Resolución propuesta**: **resuelta** — se declara explícitamente **vacuo** en la SPEC §9 (S3) y en el resumen de implementación, no como aprobado.
 
+## Reglas de trabajo acordadas
+
+- **Todo el trabajo del parcial sigue el ciclo de OpenSpec**: un change por ejercicio, con `/opsx:propose` → `/opsx:apply` → `/opsx:archive`. Un ejercicio no está entregado si no pasó por ese ciclo.
+- **El trabajo previo al ciclo está descartado.** Las ramas remotas `Parte-3`, `Parte-4` y `ejercicio-5` contienen implementación hecha antes de que existiera OpenSpec: no se integran, no se toman como referencia y no se hace cherry-pick. Se rehace siguiendo el `tasks.md` del change correspondiente.
+- **La spec de cada change vive en OpenSpec** y en `docs/` queda solo el resumen de implementación con la evidencia (DD-11).
+
 ## Preguntas abiertas (priorizadas)
 
 | Prioridad | Pregunta | Bloquea | Decisor |

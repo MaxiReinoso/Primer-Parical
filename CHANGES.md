@@ -10,6 +10,10 @@ Los 6 changes corresponden **uno a uno a los 6 ejercicios de la consigna** (100 
 
 ## Cómo usar este documento
 
+> ⚠️ **El trabajo de este parcial se hace SIEMPRE con el ciclo de OpenSpec.** Cada ejercicio es un change: `/opsx:propose` → `/opsx:apply` → `/opsx:archive`. Lo que no pasa por ese ciclo no cuenta como entrega.
+>
+> Las ramas `Parte-3`, `Parte-4` y `ejercicio-5` del remoto son **trabajo previo al ciclo, descartado**: no se integran, no se usan como referencia y no hay que hacer cherry-pick de ellas. Si encontrás código de esos ejercicios por ahí, rehacelo siguiendo el `tasks.md` de tu change.
+
 1. Identificar el change a implementar (verificar que sus dependencias están en `openspec/changes/archive/`).
 2. Leer los docs de la knowledge-base indicados en "Leer antes".
 3. Crear el change si todavía no existe: `openspec new change <nombre-del-change>` y redactar `proposal.md`, `design.md` y `tasks.md` (**cada `tasks.md` debe declarar explícitamente los archivos que puede tocar** — ver §Reparto de propiedad de archivos).

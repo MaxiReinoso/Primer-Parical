@@ -57,6 +57,18 @@ Primer-Parical/
 
 La única "configuración" es la clave de `localStorage` que el Ejercicio 6 defina, que es un detalle de implementación y no una variable de entorno.
 
+## Flujo de trabajo por change
+
+Cada ejercicio del parcial es un **change de OpenSpec** y sigue el ciclo completo:
+
+```
+/opsx:propose  ->  proposal + delta spec + design + tasks
+/opsx:apply    ->  implementacion (el tasks.md es el plan de trabajo)
+/opsx:archive  ->  la spec consolidada baja a openspec/specs/<capability>/spec.md
+```
+
+El trabajo previo al ciclo (ramas remotas `Parte-3`, `Parte-4` y `ejercicio-5`) **está descartado**: no se integra ni se usa como referencia.
+
 ## Convenciones de verificación
 
 No hay framework de tests. La verificación del proyecto se compone de:
