@@ -1,6 +1,6 @@
 # Librería El Estante — Base de Conocimiento
 
-Base de conocimiento generada a partir de los documentos del proyecto (`docs/`) y de la consigna del parcial.
+Base de conocimiento generada a partir de los documentos del proyecto (`docs/`) y de la consigna del parcial. Describe el **dominio**; la spec de cada change vive aparte, en OpenSpec (ver `openspec/specs/`).
 
 ## Índice de Archivos
 

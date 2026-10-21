@@ -102,16 +102,30 @@ Además, por convención del proyecto (no son reglas duras): escribir la documen
 
 ---
 
+## Dónde vive cada cosa
+
+| Artefacto | Dónde | Quién lo escribe |
+|---|---|---|
+| Conocimiento del dominio | `knowledge-base/` | La fundación; se actualiza con `kb-creator` |
+| Roadmap de los changes | `CHANGES.md` | `roadmap-generator` |
+| **Spec de un change** | **`openspec/changes/<change>/`** — proposal, delta spec, design, tasks | La fase `propose` |
+| Spec consolidada del proyecto | `openspec/specs/<capability>/spec.md` | La fase `archive` |
+| **Evidencia de la implementación** | **`docs/ejercicioN-implementacion-resumen.md`** | La fase `apply` |
+| Instrucciones del proyecto | `AGENTS.md` / `CLAUDE.md` | `agent-instruction` |
+
+**La spec no se escribe dos veces.** La spec de cada change vive **solo** en OpenSpec: el `tasks.md` es el plan de trabajo y `openspec/specs/` es el contrato. Ninguno de los dos se duplica en `docs/`. En `docs/` va **únicamente** el resumen de implementación, con la evidencia de la verificación (control por control, con estado y motivo).
+
+> **Excepción histórica:** los ejercicios 1 y 2 se implementaron antes de que existiera el ciclo de OpenSpec, y por eso tienen `docs/ejercicio{1,2}-{spec,plan,implementacion-resumen}.md`. Desde el ejercicio 3 la convención es la de esta tabla.
+
 ## Flujo de Trabajo
 
 ```
 1. Leer la KB relevante (knowledge-base/)        → entender el dominio
 2. Identificar el change en CHANGES.md           → respetar dependencias y gates
-3. /opsx:propose C-NN-nombre                     → proposal + design + specs + tasks
+3. /opsx:propose C-NN-nombre                     → proposal + delta spec + design + tasks
 4. Implementar las tasks (cargando skills)       → respetando las reglas duras
 5. /opsx:archive C-NN-nombre + marcar [x]        → cerrar el change
+6. Escribir docs/ejercicioN-implementacion-resumen.md → evidencia de la verificación
 ```
-
-Para **cada** change, la documentación de fase va en `docs/ejercicioN-spec.md`, `docs/ejercicioN-plan.md` y `docs/ejercicioN-implementacion-resumen.md`, con la evidencia de la verificación.
 
 Aplicar TODAS las reglas duras en cada paso. Ante conflicto entre la KB y este archivo, las reglas duras prevalecen.

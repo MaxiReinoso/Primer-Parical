@@ -37,5 +37,5 @@
 | Supuesto | Por qué no se puede confirmar | Qué lo confirmaría |
 |---|---|---|
 | Que la estructura de "un change por ejercicio" es la que espera el docente | Las pautas de evaluación recibidas no mencionan OpenSpec ni changes | La confirmación del equipo / del docente |
-| Que los compañeros trabajarán con el CLI `openspec` y no solo con los documentos de `docs/` | No hay evidencia en el repositorio | La práctica del equipo al tomar su change |
+| ~~Que los compañeros trabajarán con el CLI `openspec` y no solo con los documentos de `docs/`~~ **RESUELTO (DD-11):** la spec vive solo en OpenSpec y `docs/` queda con el resumen de implementación. | — | — |
 | Que la base de conocimiento no debe filtrarse al docente como documentación de producto | La consigna no menciona KB | La decisión del equipo |

@@ -26,7 +26,7 @@ Primer-Parical/
 │   └── componentes.css         # formularios, botones, mensajes, tablas, foco, responsive
 ├── js/
 │   └── app.js                  # toda la lógica (Ejercicios 3–6)
-├── docs/                       # spec / plan / resumen por ejercicio
+├── docs/                       # resumen de implementación por ejercicio
 ├── knowledge-base/             # esta base de conocimiento
 ├── openspec/
 │   ├── config.yaml

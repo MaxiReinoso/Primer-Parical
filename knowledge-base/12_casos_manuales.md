@@ -68,8 +68,8 @@ El Ejercicio 2 está implementado y verificado. El detalle completo está en `do
 
 | Ejercicio | Estado | Dónde está el detalle |
 |---|---|---|
-| 1 — HTML | **Implementado y verificado** | `docs/ejercicio1-{spec,plan,implementacion-resumen}.md` |
-| 2 — CSS | **Implementado y verificado** | `docs/ejercicio2-{spec,plan,implementacion-resumen}.md` |
+| 1 — HTML | **Implementado y verificado** | `docs/ejercicio1-{spec,plan,implementacion-resumen}.md` + spec archivada `estructura-html` |
+| 2 — CSS | **Implementado y verificado** | `docs/ejercicio2-{spec,plan,implementacion-resumen}.md` + spec archivada `presentacion-css` |
 | 3 — Datos, catálogo y filtro | Pendiente | change `ejercicio3-datos-catalogo-filtro` |
 | 4 — Altas | Pendiente | change `ejercicio4-altas-libros-clientes` |
 | 5 — Venta e historial | Pendiente | change `ejercicio5-venta-historial` |

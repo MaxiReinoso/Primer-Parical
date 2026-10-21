@@ -67,7 +67,7 @@ Primer-Parical/
 │   └── componentes.css             # componentes, foco, responsive, movimiento reducido
 ├── js/
 │   └── app.js                      # lógica (placeholder en el estado actual)
-├── docs/                           # spec / plan / resumen por ejercicio
+├── docs/                           # resumen de implementación por ejercicio
 ├── knowledge-base/                 # base de conocimiento del proyecto
 ├── openspec/                       # cambios y specs por capacidad
 ├── CHANGES.md                      # roadmap de cambios

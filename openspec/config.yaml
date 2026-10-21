@@ -70,6 +70,9 @@ rules:
   tasks:
     - "Cada tarea es un checkbox '- [ ] X.Y descripción' y debe decir CÓMO se verifica que quedó terminada."
     - "Declarar explícitamente qué archivos puede tocar el change, para no pisar el trabajo de otro integrante."
+  docs:
+    - "La spec de cada change vive SOLO en OpenSpec: openspec/changes/<change>/ con proposal, delta spec, design y tasks. No la dupliques en docs/."
+    - "En docs/ va únicamente docs/ejercicioN-implementacion-resumen.md, con la evidencia de la verificación control por control."
 
 operations:
   apply:
@@ -79,6 +82,8 @@ operations:
         no indicar ninguna prueba como aprobada sin ejecutarla.
       - Si aparece un impedimento o una contradicción que cambie la solución aprobada,
         informalo y consultá antes de ampliar el alcance.
+      - Al cerrar, escribí docs/ejercicioN-implementacion-resumen.md con la evidencia de la
+        verificación. La spec NO va en docs/: vive en el change de OpenSpec.
   archive:
     guidance: |
       - Verificá que el change pasa `openspec validate --changes` antes de archivar.

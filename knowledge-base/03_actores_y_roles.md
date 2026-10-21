@@ -5,7 +5,7 @@
 | Actor | Descripción | Cómo interactúa |
 |---|---|---|
 | **Lector / visitante** | Usuario final del sistema: consulta el catálogo y simula las operaciones de la librería | Es el único actor del **producto**. No hay registro, ni login, ni roles: todo lo que hay en pantalla está disponible para quien abra la página. |
-| **Alumno / equipo de desarrollo** | Quien construye y evalúa el frontend | Escribe el HTML, el CSS y el JavaScript de los 6 ejercicios, y documenta el resultado en `docs/`. |
+| **Alumno / equipo de desarrollo** | Quien construye y evalúa el frontend | Escribe el HTML, el CSS y el JavaScript de los 6 ejercicios: la spec de cada uno vive en su change de OpenSpec, y el resultado documentado en `docs/`. |
 | **Docente** | Quien evalúa contra los criterios de la consigna | Abre `index.html`, revisa el código, ejecuta los casos manuales y lee el README. No interactúa con el sistema en runtime. |
 
 **No hay actor autenticado.** La consigna lo establece: *"No se requiere un inicio de sesión real"* y *"Tampoco se requiere un inicio de sesión"*. Los datos son ficticios y las validaciones "sirven para la práctica; no representan seguridad ni integridad garantizada por un servidor".
