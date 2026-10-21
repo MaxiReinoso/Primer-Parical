@@ -1,0 +1,112 @@
+/* Librería El Estante — Capa de layout: estructura de página y composición adaptable.
+   Ejercicio 2: Presentación con CSS y uso adaptable.
+
+   Capa del sistema de estilos: Capa de layout: estructura de página y composición adaptable.
+   Los archivos se cargan en el orden base -> layout -> componentes,
+   que es el que define la cascada.
+*/
+
+/* ============================================================
+   4. LAYOUT
+   ============================================================ */
+.encabezado {
+  padding: var(--esp-4);
+  background-color: var(--color-superficie);
+  border-block-end: 1px solid var(--color-borde);
+}
+
+.encabezado h1 {
+  font-size: var(--tamano-titulo-1);
+}
+
+.navegacion {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--esp-2);
+  min-block-size: var(--alto-nav);
+  padding: var(--esp-2) var(--esp-4);
+  background-color: var(--color-superficie);
+  border-block-end: 1px solid var(--color-borde);
+}
+
+.nav-enlace {
+  padding: var(--esp-2) var(--esp-3);
+  border-radius: var(--radio-1);
+  color: var(--color-acento);
+  text-decoration: underline;
+}
+
+/* El hover usa --color-superficie-alt y no --color-acento-suave:
+   --color-acento sobre --color-acento-suave da 4,47:1 y no alcanza
+   el 4,5:1 de WCAG AA para texto normal (SPEC D2). */
+.nav-enlace:hover {
+  background-color: var(--color-superficie-alt);
+}
+
+.contenido {
+  display: grid;
+  gap: var(--esp-7);
+  inline-size: 100%;
+  max-inline-size: var(--ancho-maximo);
+  margin-inline: auto;
+  padding: var(--esp-4);
+}
+
+/* Cada hijo de grid puede recibir contenido ancho: sin min-inline-size: 0
+   el min-width: auto por defecto lo dimensionaria a max-content y el
+   scroll horizontal se propagaria al documento (SPEC 7.4-10). */
+.contenido > *,
+.vista > * {
+  min-inline-size: 0;
+}
+
+/* Decision P1: las 5 vistas se muestran apiladas, cada una como un panel
+   de superficie propio. */
+.vista {
+  display: grid;
+  gap: var(--esp-4);
+  padding: var(--esp-5);
+  background-color: var(--color-superficie);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-3);
+  box-shadow: var(--sombra-1);
+  /* Evita que la navegacion fija tape el titulo del panel al saltar por ancla. */
+  scroll-margin-top: calc(var(--alto-nav) + var(--esp-4));
+}
+
+.vista > h2 {
+  padding-block-end: var(--esp-2);
+  border-block-end: 1px solid var(--color-borde);
+  font-size: var(--tamano-titulo-2);
+}
+
+.pie {
+  margin-block-start: auto;
+  padding: var(--esp-5) var(--esp-4);
+  border-block-start: 1px solid var(--color-borde);
+  color: var(--color-texto-suave);
+  font-size: 0.875rem;
+}
+
+@media (min-width: 48rem) {
+  .contenido {
+    gap: var(--esp-8);
+    padding: var(--esp-6);
+  }
+  .vista {
+    padding: var(--esp-6);
+  }
+}
+
+@media (min-width: 64rem) {
+  .contenido {
+    padding: var(--esp-8);
+  }
+  .vista {
+    padding: var(--esp-7);
+  }
+}

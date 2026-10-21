@@ -1,0 +1,390 @@
+/* Librería El Estante — Capa de componentes: formularios, botones, mensajes, tablas, foco y movimiento reducido.
+   Ejercicio 2: Presentación con CSS y uso adaptable.
+
+   Capa del sistema de estilos: Capa de componentes: formularios, botones, mensajes, tablas, foco y movimiento reducido.
+   Los archivos se cargan en el orden base -> layout -> componentes,
+   que es el que define la cascada.
+*/
+
+/* ============================================================
+   5. COMPONENTES
+   ============================================================ */
+
+/* --- Formularios --- */
+.formulario {
+  display: grid;
+  gap: var(--esp-4);
+  /* min(100%, 16rem) impide que la pista exceda el ancho del contenedor. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+/* Los bloques anchos ocupan la fila completa de la grilla del formulario.
+   Sin esto, la tabla de renglones queda comprimida en una sola columna. */
+.formulario > .tabla-contenedor,
+.formulario > .venta__total,
+.formulario > .renglon-alta,
+.formulario > .boton {
+  grid-column: 1 / -1;
+}
+
+/* inline-size: auto no encoge un item de grid (justify-self por defecto
+   = stretch): hace falta justify-self (SPEC D13). */
+.formulario > .boton {
+  justify-self: stretch;
+  inline-size: 100%;
+}
+
+.campo {
+  display: grid;
+  gap: var(--esp-1);
+  min-inline-size: 0;
+}
+
+.campo label {
+  font-weight: 600;
+  color: var(--color-texto);
+}
+
+.campo__control {
+  inline-size: 100%;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: 2.75rem;
+  padding: var(--esp-2) var(--esp-3);
+  border: 1px solid var(--color-texto-suave);
+  border-radius: var(--radio-2);
+  background-color: var(--color-superficie);
+  color: var(--color-texto);
+  font: inherit;
+}
+
+/* El borde usa --color-texto-suave (7,33:1) y no --color-borde-fuerte
+   (2,26:1, por debajo del 3:1 de WCAG 1.4.11) (SPEC D1). */
+
+select[multiple] {
+  min-block-size: 8rem;
+}
+
+.renglon-alta {
+  display: grid;
+  gap: var(--esp-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  padding: var(--esp-4);
+  border: 1px solid var(--color-borde-fuerte);
+  border-radius: var(--radio-2);
+  /* El recorte nativo del <legend> se rellena con el fondo del fieldset: si el
+     fieldset es transparente, el borde le cruza el texto por detrás. */
+  background-color: var(--color-superficie);
+}
+
+.renglon-alta legend {
+  padding-inline-end: var(--esp-2);
+  font-family: var(--fuente-titulo);
+  font-size: var(--tamano-titulo-3);
+  font-weight: 700;
+  color: var(--color-texto);
+}
+
+/* --- Botones --- */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-2);
+  min-block-size: 2.75rem;
+  padding: var(--esp-2) var(--esp-4);
+  border: 1px solid transparent;
+  border-radius: var(--radio-2);
+  background-color: var(--color-acento);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+}
+
+.boton:hover {
+  background-color: var(--color-acento-hover);
+}
+
+.boton:active {
+  background-color: var(--color-acento-activo);
+}
+
+.boton--secundario {
+  background-color: var(--color-superficie);
+  border-color: var(--color-texto-suave);
+  color: var(--color-texto);
+}
+
+.boton--secundario:hover {
+  background-color: var(--color-superficie-alt);
+}
+
+.boton--modificar {
+  background-color: var(--color-superficie);
+  border-color: var(--color-texto-suave);
+  color: var(--color-texto);
+}
+
+.boton--modificar:hover {
+  background-color: var(--color-superficie-alt);
+}
+
+.boton--quitar {
+  background-color: var(--color-error);
+  color: #ffffff;
+}
+
+.boton--quitar:hover {
+  background-color: var(--color-error-hover);
+}
+
+/* --- Mensajes de estado ---
+   Cada estado lleva dos señales: color (texto + filete) y glifo ::before.
+   El texto del HTML sigue siendo el portador principal del significado. */
+.mensaje {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-2);
+  padding: var(--esp-3) var(--esp-4);
+  border-inline-start: 4px solid var(--color-texto-suave);
+  border-radius: var(--radio-2);
+  background-color: var(--color-acento-suave);
+  color: var(--color-texto-suave);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.mensaje::before {
+  content: "\2139";
+  font-weight: 700;
+}
+
+.mensaje--exito {
+  border-inline-start-color: var(--color-exito);
+  color: var(--color-exito);
+}
+
+.mensaje--exito::before {
+  content: "\2713";
+}
+
+.mensaje--error {
+  border-inline-start-color: var(--color-error);
+  color: var(--color-error);
+}
+
+.mensaje--error::before {
+  content: "\2715";
+}
+
+.mensaje--vacio {
+  border-inline-start-color: var(--color-texto-suave);
+  color: var(--color-texto-suave);
+}
+
+.mensaje--vacio::before {
+  content: "\2139";
+}
+
+/* Regla obligatoria: sin ella, el display: flex de .mensaje anularia el
+   display: none del navegador y los 7 mensajes ocultos aparecerian de golpe.
+   Especificidad (0,2,0) > (0,1,0) (SPEC 7.7-18). */
+.mensaje[hidden] {
+  display: none;
+}
+
+/* --- Tablas ---
+   .tabla-contenedor es el unico elemento que puede generar scroll
+   horizontal, y ese scroll no se propaga al documento. */
+.tabla-contenedor {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-2);
+  background-color: var(--color-superficie);
+  box-shadow: var(--sombra-1);
+}
+
+/* min-inline-size: max-content impide que la tabla se encoja por debajo de
+   su ancho natural: la desborda dentro del contenedor en vez de comprimir
+   el contenido (SPEC D5). */
+.tabla {
+  inline-size: 100%;
+  min-inline-size: max-content;
+  border-collapse: collapse;
+}
+
+.tabla thead th {
+  padding: var(--esp-2) var(--esp-3);
+  border-block-end: 2px solid var(--color-texto-suave);
+  background-color: var(--color-superficie-alt);
+  color: var(--color-texto);
+  text-align: start;
+}
+
+.tabla tbody td {
+  padding: var(--esp-2) var(--esp-3);
+  border-block-end: 1px solid var(--color-borde);
+  vertical-align: middle;
+}
+
+.tabla tbody tr:hover {
+  background-color: var(--color-superficie-alt);
+}
+
+/* --- Preparacion para los render de los Ejercicios 3-6 ---
+   Estas reglas no implementan ningun render: solo dejan preparada la
+   presentacion para el JavaScript de los ejercicios siguientes. */
+.listado--catalogo {
+  display: grid;
+  gap: var(--esp-4);
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+}
+
+.libro {
+  min-inline-size: 0;
+  padding: var(--esp-4);
+  border: 1px solid var(--color-borde-fuerte);
+  border-radius: var(--radio-3);
+  background-color: var(--color-superficie);
+  box-shadow: var(--sombra-1);
+}
+
+.libro:hover {
+  box-shadow: var(--sombra-2);
+}
+
+.libro__titulo {
+  margin: 0;
+  font-size: var(--tamano-titulo-3);
+  overflow-wrap: anywhere;
+}
+
+.libro__datos {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--esp-1) var(--esp-3);
+  margin: 0;
+}
+
+.libro__datos dt {
+  font-weight: 600;
+  color: var(--color-texto-suave);
+}
+
+.libro__datos dd {
+  margin: 0;
+  color: var(--color-texto);
+  overflow-wrap: anywhere;
+}
+
+.libro__isbn,
+.libro__editorial,
+.libro__genero,
+.libro__autores,
+.libro__precio {
+  margin: 0;
+  color: var(--color-texto);
+}
+
+.fila-renglon__libro {
+  text-align: start;
+}
+
+.fila-renglon__cantidad,
+.fila-renglon__precio-unitario,
+.fila-renglon__subtotal {
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+/* Nunca display: flex en un td: se sale del modelo de tabla y rompe la
+   altura de fila. Los dos botones quedan en linea por su inline-flex. */
+.fila-renglon__acciones {
+  white-space: nowrap;
+}
+
+.fila-renglon__acciones .boton + .boton {
+  margin-inline-start: var(--esp-2);
+}
+
+.venta__total {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--esp-4);
+  padding: var(--esp-3) var(--esp-4);
+  border-radius: var(--radio-2);
+  background-color: var(--color-superficie-alt);
+  font-size: var(--tamano-titulo-3);
+  font-weight: 600;
+}
+
+.venta__total output {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.detalle-venta {
+  display: grid;
+  gap: var(--esp-4);
+  padding: var(--esp-4);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-3);
+  background-color: var(--color-superficie);
+}
+/* ============================================================
+   6. FOCO
+   ============================================================ */
+/* Prohibido outline: none en todo el CSS: no hay reset de outline.
+   El anillo usa --color-foco (6,13:1 sobre fondo, 6,78:1 sobre superficie). */
+:focus-visible {
+  outline: 2px solid var(--color-foco);
+  outline-offset: 2px;
+  box-shadow: var(--sombra-foco);
+}
+
+/* El contenedor tiene tabindex="0": su anillo va hacia adentro, para no
+   superponerse al contenido circundante (SPEC 7.5-14). */
+.tabla-contenedor:focus-visible {
+  outline-offset: -3px;
+}
+
+@media (min-width: 48rem) {
+  .formulario {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  }
+  .formulario > .boton {
+    justify-self: start;
+    inline-size: auto;
+  }
+}
+
+@media (min-width: 64rem) {
+  .listado--catalogo {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+  }
+}
+/* ============================================================
+   8. MOVIMIENTO REDUCIDO
+   ============================================================ */
+/* Unica excepcion permitida a !important: hace falta para anular
+   transiciones y animaciones mas especificas que la regla universal.
+   El scroll-behavior se anula aparte y sin !important: misma
+   especificidad que la regla base y, al ir despues, gana. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}

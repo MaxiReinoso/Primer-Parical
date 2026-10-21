@@ -12,7 +12,7 @@ Fecha de redacción: 2026-10-20.
 
 **Objetivo.** Definir una identidad visual propia y coherente (color, tipografía, espaciado, tarjetas, formularios, botones, tablas y mensajes), una organización CSS con Flexbox/Grid que funcione a 320 px y 1280 px sin desplazamiento horizontal de la página —con las tablas anchas desplazándose dentro de su propio contenedor—, y una accesibilidad básica verificable: foco visible, recorrido por teclado y mensajes de error expresados con texto y no solo con color.
 
-**Resultado esperado.** Un único archivo `css/styles.css` completo, coherente con la estructura HTML existente, que:
+**Resultado esperado.** Un sistema de estilos modularizado en `css/` (`styles.css` como punto de entrada + `base.css` + `layout.css` + `componentes.css`), coherente con la estructura HTML existente, que:
 
 - declare todos sus valores como *custom properties* en `:root` (tokens de color, tipografía, espaciado, radios y sombras);
 - reutilice las clases ya presentes en `index.html` para elementos equivalentes, sin selectores por `id` usados para estilo, sin CSS inline y sin URLs externas;
@@ -119,7 +119,7 @@ Antes de cerrar esta SPEC se construyó, **en la carpeta temporal y fuera del pr
 
 ### 3.1 Incluido
 
-- **Un único archivo de estilos: `css/styles.css`**, completo y en la ubicación ya enlazada por `index.html`. No se crean hojas de estilo adicionales, ni CSS inline, ni `<style>`.
+- **Sistema de estilos modularizado en `css/`**: `styles.css` (punto de entrada, enlazado por `index.html`), `base.css` (base), `layout.css` (layout) y `componentes.css` (componentes), con el detalle de §5.1. No se crean hojas de estilo adicionales, ni CSS inline, ni `<style>`.
 - **Tokens (custom properties) declarados en `:root`:** color (12 tokens base + 3 derivados para interacción), tipografía (2 pilas y 4 tamaños fluidos), espaciado (8 pasos), radios (4 valores), sombras (3 valores), más 2 medidas de layout.
 - **Identidad visual completa:** color, tipografía, espaciado, tarjetas, formularios, botones, tablas y mensajes, con estilos reutilizables para elementos equivalentes.
 - **Layout con Flexbox y Grid** (mobile-first), con `box-sizing: border-box` global, `min-inline-size: 0` en los hijos flexibles que pueden recibir contenido largo, y `clamp()` / `minmax()` para tipografía y grillas fluidas.
@@ -164,17 +164,18 @@ Antes de cerrar esta SPEC se construyó, **en la carpeta temporal y fuera del pr
 
 ### 5.1 Arquitectura del CSS
 
-Un solo archivo, `css/styles.css`, organizado en capas en este orden (orden pensado para que cada capa dependa solo de las anteriores):
+El sistema de estilos es **modular**: cuatro archivos en `css/`, tres capas más un punto de entrada. El orden de carga define la cascada (cada capa depende solo de las anteriores) y coincide con el orden de importación de `styles.css`:
 
-1. **Cabecera de comentario** — identificación, ejercicio, y la advertencia de que los tokens son la única fuente de valores.
-2. **`:root`** — todos los tokens (§5.2). Se declara primero para que las capas siguientes solo usen `var()`.
-3. **Base / reset** — `box-sizing: border-box` global, `margin-block`/`padding` de headings y `dd`/`p`, `font-family` y `font-size` base, `color`/`background` del `body`, `line-height`, `font-variant-numeric: tabular-nums`, `scroll-behavior: smooth`, `color-scheme: light`.
-4. **Tipografía** — `h1`–`h3` con la pila serif y tamaños fluidos; anclas `a`.
-5. **Layout** — `.encabezado`, `.navegacion`, `.nav-enlace`, `.contenido`, `.vista`, `.pie`.
-6. **Componentes** — `.formulario`, `.campo`, `.campo__control`, `.renglon-alta`, `.boton` (+ modificadores), `.mensaje` (+ modificadores), `.tabla-contenedor`, `.tabla`, `.listado--catalogo`, `.libro` (+ partes), `.fila-renglon` (+ celdas), `.venta__total`, `.detalle-venta`.
-7. **Foco** — reglas de `:focus-visible` (globales y la excepción de `.tabla-contenedor`).
-8. **Responsive** — `@media (min-width: 48rem)` y `@media (min-width: 64rem)` (mobile-first: las reglas base son de 320 px).
-9. **Movimiento reducido** — `@media (prefers-reduced-motion: reduce)` con las únicas declaraciones `!important` justificadas.
+| Archivo | Capa | Contenido |
+|---|---|---|
+| `css/styles.css` | **Punto de entrada** | Solo comentarios y las tres reglas `@import`. Es el archivo enlazado por `<link>` desde `index.html`. |
+| `css/base.css` | **Base** | `:root` con los 38 tokens (§5.2), reset (`box-sizing: border-box` global, `margin-block`/`padding` de headings y `dd`/`p`, `field`/`legend`), y tipografía base (`font-family` y `font-size` del `body`, `line-height`, `font-variant-numeric: tabular-nums`, `scroll-behavior: smooth`, `color-scheme: light`, `h1`–`h3` con la pila serif, anclas `a`). |
+| `css/layout.css` | **Layout** | `.encabezado` (+`h1`), `.navegacion`, `.nav-enlace`, `.contenido`, `.vista` (panel de superficie), `.vista > h2`, `.pie`; y la **composición adaptable** de la capa de layout (`@media (min-width: 48rem)` y `64rem` sobre `.contenido` y `.vista`). |
+| `css/componentes.css` | **Componentes** | `.formulario`, `.campo`, `.campo__control`, `select[multiple]`, `.renglon-alta` (+`legend`), `.boton` (+ modificadores), `.mensaje` (+ modificadores y la regla `[hidden]`), `.tabla-contenedor`, `.tabla`, `.listado--catalogo`, `.libro` (+ partes), `.fila-renglon` (+ celdas), `.venta__total`, `.detalle-venta`; las reglas de **foco** (`:focus-visible` y la excepción de `.tabla-contenedor`); la **composición adaptable** de los componentes (`@media` sobre `.formulario` y `.listado--catalogo`); y el bloque de **movimiento reducido**. |
+
+Dentro de cada archivo, las secciones van numeradas y comentadas, para que la lectura de un archivo cualquiera sea autosuficiente. Cada archivo abre con un comentario de cabecera que lo identifica y recuerda el orden de carga.
+
+**Por qué `@import` y no varios `<link>`:** `index.html` está aprobado y congelado (§3.2). Un único `<link>` a `css/styles.css` mantiene esa estructura intacta y, a la vez, entrega el sistema modularizado. Los `@import` son **relativos** (`url("base.css")`), nunca externos, y `@import` debe ir antes de cualquier regla: por eso el punto de entrada no contiene ninguna.
 
 **Interfaces con el HTML.** La única interfaz es el conjunto de 38 clases ya presentes en `index.html` (§5.4). El CSS **no conoce** ningún `id` y **no** añade clases al HTML.
 
@@ -405,7 +406,7 @@ Los **10** contenedores de estado verificados en `index.html`, con la variante C
 
 ### 7.3 Separación y reutilización
 
-5. El CSS vive **únicamente** en `css/styles.css`. `index.html` no se modifica: **0** `style=` inline, **0** `<style>`.
+5. El CSS vive **únicamente** en `css/` (4 archivos, §5.1). `index.html` no se modifica: **0** `style=` inline, **0** `<style>`.
 6. Los elementos equivalentes reutilizan las clases existentes. **Prohibido** usar selectores por `id` para dar estilo (se usan clases y selectores de elemento/descendiente).
 7. BEM en español: bloque = elemento (`.libro`, `.tabla`, `.mensaje`), elemento = parte (`__titulo`, `__datos`), modificador = estado/variante (`--exito`, `--error`, `--vacio`, `--quitar`). Se respetan los nombres ya presentes en el HTML.
 
@@ -535,6 +536,7 @@ Vienen fijadas y **no se re-litigan** en esta SPEC:
 | **D11** | El `thead` **no** lleva `position: sticky`. | `.tabla-contenedor` no tiene `max-block-size`, así que no hay scroll vertical y el `sticky` sería un efecto nulo (y con `border-collapse: collapse` el filete colapsado no acompaña al `th` en Chrome). Un encabezado fijo por tabla no se aplica: cada vista ya es un panel con su propio título. |
 | **D12** | `.pie { margin-block-start: auto; }`. | En un contenedor flex vertical con `justify-content: flex-start` (por defecto), el espacio libre queda **debajo** del pie: sin esta regla el pie no queda al pie de la ventana. |
 | **D13** | Los botones de formulario se encogen a ≥48 rem con `justify-self: start`, no con `inline-size: auto`. | El `justify-self` por defecto de un ítem de grid es `stretch`: lo estira a la columna de todos modos. `inline-size: auto` solo no alcanza. |
+| **D15** | El sistema de estilos se **modulariza en tres capas** (`base.css`, `layout.css`, `componentes.css`) con `styles.css` como punto de entrada que las importa, en vez de un único archivo. | La consigna pide que «el CSS se mantenga en archivos externos» y el formato de entrega menciona «carpetas de CSS». La capa base → layout → componentes es la que ordenaba la SPEC §5.1 y la que hace legible cada archivo por separado. Se usa `@import` y no varios `<link>` **para no modificar `index.html`**, que está aprobado y congelado. Equivalencia verificada: las mismas 68 reglas bajo las mismas condiciones que la versión de un solo archivo (resumen §2.8). |
 | **D14** | `.renglon-alta` declara `background-color: var(--color-superficie)`. | El recorte nativo del `<legend>` se rellena con el fondo del fieldset; si el fieldset es transparente, el borde puede verse detrás del texto del legend. En Edge 155 el recorte ya se compone con el color del panel (verificado por análisis de píxeles: el borde se corta correctamente), por lo que la regla es **defensiva y no cambia el render medido**. |
 | **D10** | No se marca la vista activa en la navegación. | Hacerlo en CSS puro exige `body:has(#catalogo:target) .nav-enlace[href="#catalogo"]`, o sea **selectores por `id` usados para estilo**, lo que contradice R-02 y CA-01. Queda para el Ejercicio 3, donde el JS puede resolverlo sin selectores por `id`. |
 

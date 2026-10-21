@@ -24,8 +24,18 @@ Se ejecutaron las 13 tareas del plan. **El único archivo de producto modificado
 | T-12 | Verificación real en navegador a 320 px y 1280 px sobre copia temporal — §2.3 y §2.4. |
 | T-13 | Este documento. |
 | T-14 | **Cierre de los controles que habían quedado abiertos** (§2.7): recorrido de teclado con pulsaciones **reales** de `Tab` y `Enter` vía Chrome DevTools Protocol, y lectura del **CSSOM** (`document.styleSheets[0].cssRules`) sirviendo la copia temporal por HTTP. |
+| T-15 | **Modularización del sistema de estilos** en tres capas: `css/styles.css` (punto de entrada) + `css/base.css` + `css/layout.css` + `css/componentes.css`. `index.html` **no se toca** (§2.8). |
 
-**Resultado material:** `css/styles.css` pasa de 3 líneas (placeholder) a **623 líneas / 15.546 bytes**, con **80 bloques de regla**, **269 declaraciones**, **3 bloques `@media`** y **38 custom properties**. El `git status` muestra `M css/styles.css` y los dos documentos nuevos de `docs/`; nada más.
+**Resultado material:** el sistema de estilos pasa de 3 líneas (placeholder) a **4 archivos / 644 líneas / 17.211 bytes**:
+
+| Archivo | Tamaño | Líneas | Contenido |
+|---|---|---|---|
+| `css/styles.css` | 688 B | 18 | Punto de entrada: solo comentarios y los 3 `@import` |
+| `css/base.css` | 3.331 B | 124 | Tokens (`:root` con 38 declaraciones), reset y tipografía |
+| `css/layout.css` | 3.017 B | 112 | Estructura de página y composición adaptable |
+| `css/componentes.css` | 10.175 B | 390 | Componentes, foco, responsive y movimiento reducido |
+
+En total: **82 bloques de regla**, **38 custom properties** y **5 media queries** (los dos cortes de ancho, uno por capa, más el de movimiento reducido). El `git status` muestra solo `css/` y los documentos de `docs/`; `index.html` y `js/app.js` intactos.
 
 ### 1.1 Ajustes respecto de la SPEC (aditivos, sin salir del alcance)
 
@@ -46,9 +56,9 @@ Se ejecutaron las 13 tareas del plan. **El único archivo de producto modificado
 | Copia medida | `%TEMP%\opencode\verif-ej2\` (copia de `index.html` + `css/`). **`index.html` del proyecto no se modificó** (`git status` lo confirma) |
 | Reporte | `postMessage` del iframe al arnés. **El script no inyecta elementos en la página medida** (un `<pre>` con líneas largas ensancha el documento: 2085 px con él, 305 px sin él, con CSS idéntico) |
 
-### 2.2 Capa (a) — controles objetivos de solo lectura: **48/48 APROBADOS**
+### 2.2 Capa (a) — controles objetivos de solo lectura: **56/56 APROBADOS**
 
-Script en la carpeta temporal (no se agrega al proyecto). Resultado: **48/48 APROBADOS, 0 fallidos**.
+Script en la carpeta temporal (no se agrega al proyecto), ejecutado sobre los **4 archivos de `css/`** en conjunto. Resultado: **56/56 APROBADOS, 0 fallidos**.
 
 | Control | Resultado |
 |---|---|
@@ -58,7 +68,8 @@ Script en la carpeta temporal (no se agrega al proyecto). Resultado: **48/48 APR
 | `!important` solo dentro del bloque `prefers-reduced-motion` (3 declaraciones) | APROBADO |
 | `scroll-behavior: auto` sin `!important` | APROBADO |
 | Sin `width:` fijo en px; sin `max-width` en media queries; 2 `@media min-width` + 1 `prefers-reduced-motion` | APROBADO |
-| `:root` con **38** custom properties; los 12 hexadecimales de la paleta, uno de cada uno | APROBADO |
+| `:root` con **38** custom properties (en `base.css`); los 12 hexadecimales de la paleta, uno de cada uno | APROBADO |
+| Estructura modular: `styles.css` con **3** `@import` (relativos) antes de cualquier regla; los 4 archivos existen, con comentarios balanceados y cabecera identificativa | APROBADO |
 | `box-sizing: border-box` universal; `clamp(` ×4; `minmax(min(100%` ×4; `min-inline-size: 0` ×5 | APROBADO |
 | `:focus-visible` presente y **cero** `outline: none` / `outline: 0` | APROBADO |
 | `.mensaje[hidden] { display: none }` presente | APROBADO |
@@ -204,11 +215,41 @@ Método: la **copia temporal** servida por `http://127.0.0.1` (mismo origen, sin
 
 | Dato | Valor medido | Coincide con lo verificado por lectura de texto |
 |---|---|---|
-| Hojas de estilo cargadas | 1 (`http://127.0.0.1:8731/css/styles.css`) | ✔ |
-| Reglas accesibles (`cssRules.length`) | **71** (68 de estilo + 3 media queries) | ✔ |
+| Hojas de estilo de primer nivel | 1 (`http://127.0.0.1:8761/css/styles.css`) | ✔ |
+| Reglas `@import` de la hoja de entrada | **3** → `base.css`, `layout.css`, `componentes.css` | ✔ |
 | Declaraciones en `:root` | **38** | ✔ |
-| Media queries | `(min-width: 48rem)`, `(min-width: 64rem)`, `(prefers-reduced-motion: reduce)` | ✔ |
+| Media queries | **5**: `(min-width: 48rem)` y `(min-width: 64rem)` **una vez por capa**, más `(prefers-reduced-motion: reduce)` | ✔ |
 | Reglas con `!important` | **1** (la de `prefers-reduced-motion`) | ✔ |
+
+> Con la estructura modular, las hojas importadas **no** aparecen como entradas de primer nivel de `document.styleSheets` (en `file://` cada URL es un origen opaco distinto, y en HTTP quedan anidadas dentro de la regla `@import`). Por eso la lectura recorre `CSSImportRule.styleSheet.cssRules`. Es una diferencia de **cómo se enumera** el CSSOM, no de **qué se aplica**: el render medido es idéntico (§2.8).
+
+### 2.8 Modularización del sistema de estilos (T-15)
+
+El sistema de estilos pasó de un único archivo a **tres capas más un punto de entrada**, para que la entrega coincida con la lectura literal del criterio de evaluación *«estilos estructurados en archivos externos (base, layout, componentes)»* y con la consigna (*«el CSS se mantiene en archivos externos»*, formato de entrega con *«carpetas de CSS»*).
+
+| Archivo | Capa | Bloques de regla | Líneas |
+|---|---|---|---|
+| `css/styles.css` | Punto de entrada: 3 `@import` | 0 | 18 |
+| `css/base.css` | Base — tokens, reset, tipografía | 9 | 124 |
+| `css/layout.css` | Layout — estructura y composición adaptable | 16 | 112 |
+| `css/componentes.css` | Componentes — componentes, foco, responsive, movimiento reducido | 57 | 390 |
+
+**Controles ejecutados (T-15):**
+
+| # | Control | Resultado | Estado |
+|---|---|---|---|
+| M1 | **Equivalencia de reglas** contra la versión de un solo archivo (mismo archivo en git) | **68 reglas ↔ 68 reglas**, con las **mismas condiciones de `@media`** y el mismo contenido. La única diferencia estructural: cada capa lleva su propio bloque `@media` en vez de uno compartido. | APROBADO |
+| M2 | **Render a 320 px** | `scrollWidth` 305 = `clientWidth` 305 · 5/5 contenedores con scroll propio · 7/7 mensajes ocultos · 3/3 visibles · MQ48 inactiva · `h1` 22 px · body 16,016 px · `h2` 19,0006 px | APROBADO |
+| M3 | **Render a 768 px** | 753 = 753 · 0 desbordes · MQ48 activa · `h1` 30,4 px · body 16,4864 px · `h2` 22,2675 px | APROBADO |
+| M4 | **Render a 1280 px** | 1265 = 1265 · 0 desbordes · MQ48 activa · `h1` 40 px · body 17 px · `h2` 26 px | APROBADO |
+| M5 | **Teclado con `Tab` real** | 26/26 paradas · 0 sin anillo `--color-foco` · sin trampa de foco · `Enter` → `#ventas` (3 corridas estables) | APROBADO |
+| M6 | **CSSOM** | 3 reglas `@import` → `base.css`, `layout.css`, `componentes.css` · `:root` con 38 declaraciones · 5 media queries · 1 regla con `!important` | APROBADO |
+| M7 | **Estructura de archivos** | los 4 existen · comentarios balanceados en los 4 · cabecera identificativa en cada uno · los 4 cargan por `file://` | APROBADO |
+
+**El render es idéntico al de la versión de un solo archivo** en los tres anchos: la captura a 1280 px se regeneró y se comparó contra la anterior, sin diferencias visibles.
+
+**Decisión de diseño:** se usa `@import` y **no** varios `<link>` en `index.html`, para **no modificar `index.html`**, que está aprobado y congelado (§3.2 de la SPEC). El único `<link>` sigue apuntando a `css/styles.css`. Los `@import` son **relativos**: no hay ninguna URL externa.
+
 
 ---
 
@@ -231,7 +272,10 @@ Método: la **copia temporal** servida por `http://127.0.0.1` (mismo origen, sin
 
 | Archivo | Acción |
 |---|---|
-| `css/styles.css` | **modificado**: 3 líneas → 623 líneas (15.546 bytes, 80 reglas, 269 declaraciones, 38 tokens) |
+| `css/styles.css` | **modificado**: 3 líneas → punto de entrada de 18 líneas (3 `@import`) |
+| `css/base.css` | **creado**: 124 líneas — tokens (`:root`, 38 declaraciones), reset y tipografía |
+| `css/layout.css` | **creado**: 112 líneas — estructura de página y composición adaptable |
+| `css/componentes.css` | **creado**: 390 líneas — componentes, foco, responsive y movimiento reducido |
 | `docs/ejercicio2-spec.md` | Fase 1 (actualizada con P1 resuelta, D1–D14 y las correcciones de la auditoría) |
 | `docs/ejercicio2-plan.md` | Fase 2 |
 | `docs/ejercicio2-implementacion-resumen.md` | este archivo |
@@ -244,12 +288,12 @@ Fuera del proyecto (temp del sistema, no se entrega): copia de verificación, ar
 
 | Criterio | Evidencia | Estado |
 |---|---|---|
-| **CA-01** (R-01, R-02, R-06) | 8 familias de estilos definidas; 38 tokens en `:root`; 45 clases del HTML reutilizadas (38 existentes + 1 reservada); 0 selectores por `id`; 0 CSS inline; 0 URLs externas (§2.2) | **APROBADO** |
+| **CA-01** (R-01, R-02, R-06) | 8 familias de estilos definidas; 38 tokens en `:root`; sistema modularizado en 3 capas + punto de entrada; 38 clases del HTML reutilizadas (+1 reservada); 0 selectores por `id`; 0 CSS inline; 0 URLs externas (§2.2, §2.8) | **APROBADO** |
 | **CA-02** (R-05) | `scrollWidth == clientWidth` a 320 y 1280 px; 5/5 contenedores de tabla con scroll propio a 320 px; ningún elemento desborda fuera de un scroller; escala fluida verificada (B1–B3, B8) | **APROBADO** |
 | **CA-03** (R-04) | Los 26 puntos de foco con anillo `solid 2px rgb(15,90,168)`; anillo del contenedor hacia adentro; 0 `outline: none`; botones ≥ 44 px; contraste renderizado AA en 8 pares; mensajes legibles por su texto y con doble señal (B9–B13); **recorrido con teclas Tab reales: 26/26 paradas en orden lógico, sin trampa de foco, y `Enter` navega a `#ventas`** (§2.7.1) | **APROBADO** |
 | **CA-04** (R-03, R-07) | 10 contenedores de estado con estilo distinguible; 7/7 ocultos respetan `hidden`; 3/3 visibles; glifos correctos; reglas de preparación de §5.8 presentes; `<template>` inerte y `js/app.js` vacío (B4–B6, §2.2) | **APROBADO** |
 | **CA-05** (global) | `git diff` sin diferencias en `index.html` y `js/app.js`; único archivo de producto modificado: `css/styles.css`; sin JS, datos, imágenes, README ni modo oscuro | **APROBADO** |
 | **CA-06** (global) | CSS3 moderno con custom properties; BEM en español; mobile-first; `box-sizing: border-box` global; `min-inline-size: 0`; `clamp()`/`minmax()`; `!important` solo justificado; 0 `style=` inline; 0 URLs externas | **APROBADO** |
-| **CA-07** (R-08) | 48 controles de la capa (a) + 16 de la capa (b) + 8 suplementarios + 8 de contraste + 2 de cierre (T-14), todos ejecutados y reportados | **APROBADO** |
+| **CA-07** (R-08) | 56 controles de la capa (a) + 16 de la capa (b) + 8 suplementarios + 8 de contraste + 2 de cierre (T-14) + 5 de modularización (T-15), todos ejecutados y reportados | **APROBADO** |
 | **CA-08** (R-08) | **1** control marcado **OMITIDO** con su motivo (segundo motor de renderizado, §2.6) y **1** **PENDIENTE POR ALCANCE** (apariencia con contenido real, Ej. 3–5) — ninguno presentado como aprobado; los 3 que quedaban abiertos en la primera redacción se cerraron ejecutándolos (T-14, §2.7) y 2 falsos positivos de mi propio script se corrigieron y documentaron | **APROBADO** |
 | **CA-09** (global) | Supuestos S1–S9, decisiones D1–D14, pendientes y limitaciones identificados en la SPEC §9 y en §2.6, §3 y §4 de este resumen | **APROBADO** |

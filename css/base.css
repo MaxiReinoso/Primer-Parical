@@ -1,0 +1,124 @@
+/* Librería El Estante — Capa base: tokens, reset y tipografía.
+   Ejercicio 2: Presentación con CSS y uso adaptable.
+
+   Capa del sistema de estilos: Capa base: tokens, reset y tipografía.
+   Los archivos se cargan en el orden base -> layout -> componentes,
+   que es el que define la cascada.
+*/
+
+/* ============================================================
+   1. TOKENS
+   ============================================================ */
+:root {
+  /* --- Color: 12 tokens base --- */
+  --color-fondo: #f7f1e6;
+  --color-superficie: #fffdf8;
+  --color-superficie-alt: #efe6d6;
+  --color-borde: #d9cdb8;
+  --color-borde-fuerte: #b9a98d;
+  --color-texto: #2b241f;
+  --color-texto-suave: #5f5349;
+  --color-acento: #a8452b;
+  --color-acento-suave: #f0dcd2;
+  --color-exito: #2f6b46;
+  --color-error: #a3271f;
+  --color-foco: #0f5aa8;
+
+  /* --- Color: 3 tokens derivados para interaccion --- */
+  --color-acento-hover: color-mix(in srgb, var(--color-acento) 84%, #000);
+  --color-acento-activo: color-mix(in srgb, var(--color-acento) 72%, #000);
+  --color-error-hover: color-mix(in srgb, var(--color-error) 84%, #000);
+
+  /* --- Tipografia: 2 pilas del sistema (cero webfonts) --- */
+  --fuente-titulo: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+  --fuente-texto: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* --- Tipografia: 4 tamanos fluidos (extremos exactos en 320 px y 1280 px) --- */
+  --tamano-base: clamp(1rem, 0.98rem + 0.105vw, 1.0625rem);
+  --tamano-titulo-1: clamp(1.375rem, 1rem + 1.875vw, 2.5rem);
+  --tamano-titulo-2: clamp(1.1875rem, 1.0417rem + 0.7292vw, 1.625rem);
+  --tamano-titulo-3: clamp(1.0625rem, 1rem + 0.3125vw, 1.25rem);
+
+  /* --- Espaciado: multiplos de 4 px --- */
+  --esp-1: 4px;
+  --esp-2: 8px;
+  --esp-3: 12px;
+  --esp-4: 16px;
+  --esp-5: 24px;
+  --esp-6: 32px;
+  --esp-7: 48px;
+  --esp-8: 64px;
+
+  /* --- Radios --- */
+  --radio-1: 4px;
+  --radio-2: 8px;
+  --radio-3: 14px;
+  --radio-4: 999px;
+
+  /* --- Sombras --- */
+  --sombra-1: 0 1px 2px rgb(43 36 31 / 8%);
+  --sombra-2: 0 6px 18px rgb(43 36 31 / 10%);
+  --sombra-foco: 0 0 0 3px rgb(15 90 168 / 35%);
+
+  /* --- Layout --- */
+  --alto-nav: 3rem;
+  --ancho-maximo: 72rem;
+}
+
+/* ============================================================
+   2. BASE / RESET
+   ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100vh;
+  font-family: var(--fuente-texto);
+  font-size: var(--tamano-base);
+  line-height: 1.5;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  font-variant-numeric: tabular-nums;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+p {
+  margin: 0;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+
+legend {
+  padding: 0;
+}
+
+/* ============================================================
+   3. TIPOGRAFIA
+   ============================================================ */
+a {
+  color: var(--color-acento);
+}

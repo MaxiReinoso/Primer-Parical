@@ -19,7 +19,10 @@ Estado: **pendiente de aprobación para implementar. No se ejecuta ninguna tarea
 
 | Archivo | Acción |
 |---|---|
-| `css/styles.css` | **modificar** — reemplazar el placeholder de 3 líneas por la hoja de estilos completa (§5 de la SPEC). |
+| `css/styles.css` | **modificar** — el punto de entrada: solo comentarios y los tres `@import`. |
+| `css/base.css` | **crear** — capa base: tokens `:root`, reset y tipografía (§5.1 de la SPEC). |
+| `css/layout.css` | **crear** — capa de layout: estructura de página y composición adaptable. |
+| `css/componentes.css` | **crear** — capa de componentes: componentes, foco, responsive y movimiento reducido. |
 | `index.html` | **no se toca** (ni una línea). |
 | `js/app.js` | **no se toca** (sigue siendo el placeholder). |
 | `docs/ejercicio2-spec.md` | ya creado en Fase 1 (no se modifica salvo registro de decisiones, ya hecho). |
@@ -122,7 +125,7 @@ Restricciones metodológicas verificadas y que este plan respeta:
 - **Archivos:** ninguno (solo lectura; el script vive en la carpeta temporal).
 - **Dependencias:** T-01…T-10.
 - **Comprobación:**
-  1. **Limpieza:** 0 coincidencias de `style=` inline, 0 `<style>` y 0 `<script>` con cuerpo en `index.html`; 0 URLs `http://`/`https://`/`//` en `index.html` y `styles.css`.
+  1. **Limpieza:** 0 coincidencias de `style=` inline, 0 `<style>` y 0 `<script>` con cuerpo en `index.html`; 0 URLs `http://`/`https://`/`//` en `index.html` y en los 4 archivos de `css/`; los únicos `url()` son los `@import` **relativos**.
   2. **Selectores por id:** 0 selectores por `id` usados para estilo en `styles.css` (la única excepción admitida es `:root`, que es pseudo-clase).
   3. **`!important`:** todas las coincidencias dentro del bloque `prefers-reduced-motion`.
   4. **Anchos fijos:** 0 declaraciones `width:` en px que impidan la adaptación (se admiten `inline-size: 100%`, `max-inline-size: 100%` y `width: auto`).
@@ -161,6 +164,18 @@ Restricciones metodológicas verificadas y que este plan respeta:
   2. **CSSOM:** servir la **copia temporal** por `http://127.0.0.1` (mismo origen, sin tocar el producto) y leer `document.styleSheets[0].cssRules`: **71** reglas (68 de estilo + 3 media queries), `:root` con **38** declaraciones, las 3 media queries esperadas y **1** sola regla con `!important` (la de `prefers-reduced-motion`).
   3. **Segundo motor:** si no hay otro motor instalado, el control queda **OMITIDO** con el motivo. **No se instala un navegador sin autorización explícita**: es un cambio de sistema fuera del alcance aprobado.
 
+### T-15 — Modularización del sistema de estilos en tres capas
+- **Resultado esperado:** el sistema de estilos pasa de un único archivo a **cuatro**: `css/styles.css` (punto de entrada, con solo comentarios y los tres `@import`), `css/base.css` (tokens, reset y tipografía), `css/layout.css` (estructura de página y composición adaptable) y `css/componentes.css` (componentes, foco, responsive y movimiento reducido). **No se modifica `index.html`**: sigue enlazando un único `css/styles.css`.
+- **Cubre:** R-01, R-06; CA-01, CA-06.
+- **Archivos:** crear `css/base.css`, `css/layout.css`, `css/componentes.css`; reescribir `css/styles.css` como punto de entrada.
+- **Dependencias:** T-01…T-10 (el CSS ya completo y verificado).
+- **Comprobación:**
+  1. **Equivalencia de reglas:** la comparación de la versión modular contra la de un solo archivo (mismo archivo en git) devuelve **68 reglas ↔ 68 reglas**, con **las mismas condiciones de `@media`** y el mismo contenido. La única diferencia estructural es que cada capa lleva su propio bloque `@media`, en vez de uno compartido.
+  2. **Render idéntico:** a 320, 768 y 1280 px, `scrollWidth == clientWidth`, 5/5 contenedores de tabla con scroll propio a 320 px, 7/7 mensajes ocultos y 3/3 visibles, media query de 48 rem inactiva a 320 px y activa a 768/1280, y los tamaños fluidos idénticos (`h1` 22/30,4/40 px · body 16,016/16,4864/17 px · `h2` de vista 19,0006/22,2675/26 px).
+  3. **Teclado:** 26/26 paradas alcanzadas con `Tab` real, todas con anillo `--color-foco`, sin trampa de foco, `Enter` navega a `#ventas`.
+  4. **CSSOM:** la hoja de entrada expone **3 reglas `@import`** que resuelven a `base.css`, `layout.css` y `componentes.css`; `:root` con **38** declaraciones; **5** media queries (48 rem y 64 rem, uno por capa, más `prefers-reduced-motion`); **1** regla con `!important`.
+  5. **Estructura:** los 4 archivos existen, tienen comentarios balanceados y cada uno abre con su cabecera identificativa; los 4 se cargan correctamente por `file://`.
+
 ---
 
 ## Orden de ejecución
@@ -174,7 +189,7 @@ T-01 ──→ T-02 ──┬─→ T-03 ─┐
                   └─→ T-10 ─┘
 T-07 (depende de T-02, T-04, T-06) ──┐
 T-09 (depende de T-02, T-03, T-07) ──┤
-                                      └─→ T-11, T-12 (paralelas) ──→ T-14 ──→ T-13
+                                      └─→ T-11, T-12 (paralelas) ──→ T-14 ──→ T-15 ──→ T-13
 ```
 
 ## Fuera de alcance de este plan (no se toca)
