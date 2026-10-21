@@ -151,6 +151,16 @@ Restricciones metodológicas verificadas y que este plan respeta:
 - **Dependencias:** T-11, T-12.
 - **Comprobación:** el resumen distingue aprobados/fallidos/omitidos/pendientes; **ningún control no ejecutado figura como aprobado**; la inspección visual de las capturas queda declarada **omitida con motivo** si el modelo no puede leer imágenes, derivada a revisión humana (como en el Ejercicio 1); los ratios de contraste se imprimen con su cálculo. **CA-05 (alcance puro):** `git diff` sobre `index.html`, `js/app.js` y cualquier otro archivo del proyecto no muestra diferencias: la única modificación es `css/styles.css` y los documentos de `docs/`; no hay JS, datos, imágenes, README ni modo oscuro.
 
+### T-14 — Cierre de los controles de verificación que quedaron abiertos
+- **Resultado esperado:** los controles que la implementación había dejado como **OMITIDO** se ejecutan o se declaran con su motivo. Concretamente: (a) **recorrido de teclado con pulsaciones reales** de `Tab` y `Enter`; (b) **lectura del CSSOM** (`document.styleSheets[0].cssRules`); (c) comportamiento en un **segundo motor**, que queda declarado sin instalar software no autorizado.
+- **Cubre:** R-04, R-08; CA-03, CA-07, CA-08.
+- **Archivos:** ninguno en el proyecto (los scripts viven en la carpeta temporal).
+- **Dependencias:** T-11, T-12.
+- **Comprobación:**
+  1. **Teclado real (Chrome DevTools Protocol):** lanzar Edge con `--remote-debugging-port` y enviar `Input.dispatchKeyEvent` de `Tab`. Se recorren las **26** paradas de foco del DOM vivo en orden lógico (5 enlaces del `<nav>` → buscador → 6 campos de libro → botón → contenedor de tabla → 2 campos de cliente → botón → contenedor → 3 campos de venta → botón → contenedor → botón → 2 contenedores), cada una con `outline-style: solid`, `outline-width: 2px` y `outline-color: rgb(15, 90, 168)` (= `--color-foco`), y los 5 contenedores con `outline-offset: -3px`. El foco **sale del documento y vuelve al inicio** (no hay trampa de foco) y `Enter` sobre un enlace del `<nav>` cambia `location.hash` a la vista destino.
+  2. **CSSOM:** servir la **copia temporal** por `http://127.0.0.1` (mismo origen, sin tocar el producto) y leer `document.styleSheets[0].cssRules`: **71** reglas (68 de estilo + 3 media queries), `:root` con **38** declaraciones, las 3 media queries esperadas y **1** sola regla con `!important` (la de `prefers-reduced-motion`).
+  3. **Segundo motor:** si no hay otro motor instalado, el control queda **OMITIDO** con el motivo. **No se instala un navegador sin autorización explícita**: es un cambio de sistema fuera del alcance aprobado.
+
 ---
 
 ## Orden de ejecución
@@ -164,12 +174,12 @@ T-01 ──→ T-02 ──┬─→ T-03 ─┐
                   └─→ T-10 ─┘
 T-07 (depende de T-02, T-04, T-06) ──┐
 T-09 (depende de T-02, T-03, T-07) ──┤
-                                      └─→ T-11, T-12 (paralelas) ──→ T-13
+                                      └─→ T-11, T-12 (paralelas) ──→ T-14 ──→ T-13
 ```
 
 ## Fuera de alcance de este plan (no se toca)
 
-`index.html` y `js/app.js`; JS con lógica, validaciones, filtros, renders, cálculos, localStorage (Ej. 3–6); ABM; README; datos de ejemplo hardcodeados; imágenes e íconos; webfonts y URLs externas; modo oscuro; la vista activa en la navegación (D10: exigiría selectores por `id`, contradice CA-01); `position: sticky` en el `thead` (D11). Cualquier necesidad detectada durante la implementación que exceda este listado se informa y se consulta antes de ampliar el alcance.
+`index.html` y `js/app.js`; JS con lógica, validaciones, filtros, renders, cálculos, localStorage (Ej. 3–6); ABM; README; datos de ejemplo hardcodeados; imágenes e íconos; webfonts y URLs externas; modo oscuro; la vista activa en la navegación (D10: exigiría selectores por `id`, contradice CA-01); `position: sticky` en el `thead` (D11); **instalar un segundo motor de renderizado** (T-14.3: es un cambio de sistema y queda fuera del alcance salvo autorización explícita). Cualquier necesidad detectada durante la implementación que exceda este listado se informa y se consulta antes de ampliar el alcance.
 
 ---
 

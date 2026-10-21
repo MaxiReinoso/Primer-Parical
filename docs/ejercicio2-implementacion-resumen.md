@@ -23,6 +23,7 @@ Se ejecutaron las 13 tareas del plan. **El único archivo de producto modificado
 | T-11 | Verificación por controles automatizables de solo lectura — §2.2. |
 | T-12 | Verificación real en navegador a 320 px y 1280 px sobre copia temporal — §2.3 y §2.4. |
 | T-13 | Este documento. |
+| T-14 | **Cierre de los controles que habían quedado abiertos** (§2.7): recorrido de teclado con pulsaciones **reales** de `Tab` y `Enter` vía Chrome DevTools Protocol, y lectura del **CSSOM** (`document.styleSheets[0].cssRules`) sirviendo la copia temporal por HTTP. |
 
 **Resultado material:** `css/styles.css` pasa de 3 líneas (placeholder) a **623 líneas / 15.546 bytes**, con **80 bloques de regla**, **269 declaraciones**, **3 bloques `@media`** y **38 custom properties**. El `git status` muestra `M css/styles.css` y los dos documentos nuevos de `docs/`; nada más.
 
@@ -161,17 +162,59 @@ Los **dos casos que no alcanzan el umbral** están resueltos por **mapeo de uso*
 
 | Control | Estado | Motivo |
 |---|---|---|
-| Recorrido de teclado en vivo (pulsación real de `Tab` y `Enter` sobre la ventana) | **OMITIDO** | Requiere interacción gráfica con la ventana; el agente no opera el navegador de forma interactiva. El foco se verificó **por medios programáticos**: los 26 elementos de la lista de foco se enfocaron uno por uno y todos lo encontraron con anillo `outline: solid 2px rgb(15,90,168)` (B9). |
-| Comportamiento en otros navegadores (Firefox, Safari, Chrome) | **OMITIDO** | No están instalados en la máquina. Solo se verificó EdgeCore 155. |
-| Lectura de las reglas CSS por `document.styleSheets[0].cssRules` | **OMITIDO** | Bloqueada por la política de origen único de `file://` en Chromium (la propiedad devolvió `n/a`). Se comprobó por otra vía: `document.styleSheets.length` = 1 y `document.styleSheets[0].href` apunta a `css/styles.css`; el contenido del archivo se verificó directamente por lectura de texto. |
-| Ancho real de la barra de desplazamiento del sistema | **APROBADO** | **Cerrado en esta fase.** Medido: 15 px a 320 px de viewport y 15 px a 1280 px (`innerWidth` 320/1280 frente a `clientWidth` 305/1265). La medición repetida con `--hide-scrollbars` da `scrollWidth == clientWidth == innerWidth` en los tres anchos (320, 768, 1280), de modo que **la barra no altera el veredicto** en ningún caso (control B16). |
+| Comportamiento en otros navegadores (Firefox, Safari, Chrome) | **OMITIDO** | No hay un segundo motor instalado en la máquina; solo se verificó EdgeCore 155. **No se instaló ninguno**: hacerlo es un cambio de sistema fuera del alcance aprobado, y se deja a decisión del docente. La consigna no exige verificar en más de un motor. |
+| Ancho real de la barra de desplazamiento del sistema | **APROBADO** | Medido: 15 px a 320 px de viewport y 15 px a 1280 px (`innerWidth` 320/1280 frente a `clientWidth` 305/1265). La medición repetida con `--hide-scrollbars` da `scrollWidth == clientWidth == innerWidth` en los tres anchos (320, 768, 1280), de modo que **la barra no altera el veredicto** en ningún caso (control B16). |
+| Revisión de la apariencia de tablas y tarjetas **con contenido real** | **PENDIENTE POR ALCANCE** | Los `tbody` están vacíos porque los datos los cargan los Ej. 3–5. Las reglas de preparación están escritas (§5.8 de la SPEC) pero no hay contenido que las ejercite. |
+
+> Los otros dos controles que esta sección listaba como **OMITIDO** (recorrido de teclado en vivo y lectura del CSSOM) **fueron ejecutados y cerrados** en la tarea T-14 — ver §2.7.
+
+### 2.7 Cierre de los controles abiertos (T-14)
+
+Los controles que la implementación había dejado como *omitidos* no figuraban como tarea en el PLAN: se agregaron como **T-14** y se ejecutaron.
+
+#### 2.7.1 Recorrido de teclado con pulsaciones reales — **APROBADO**
+
+Método: EdgeCore 155 headless con `--remote-debugging-port`, envío de `Input.dispatchKeyEvent` reales de `Tab` y `Enter` por Chrome DevTools Protocol, leyendo `document.activeElement` y sus estilos computados en cada pulsación. Se recorrieron **26** pulsaciones sobre `index.html` **del proyecto** (esta verificación no necesita copia: no modifica nada).
+
+| # | Elemento alcanzado | Anillo de foco | `outline-offset` |
+|---|---|---|---|
+| 1–5 | `A.nav-enlace` ×5 (Catálogo, Libros, Clientes, Ventas, Historial) | `solid 2px rgb(15, 90, 168)` | 2 px |
+| 6 | `INPUT#buscador-titulo` | `solid 2px rgb(15, 90, 168)` | 2 px |
+| 7–9 | `INPUT#libro-titulo`, `#libro-isbn`, `#libro-precio` | `solid 2px rgb(15, 90, 168)` | 2 px |
+| 10–12 | `SELECT#libro-editorial`, `#libro-genero`, `#libro-autores` | `solid 2px rgb(15, 90, 168)` | 2 px |
+| 13 | `BUTTON.boton` (Registrar libro) | `solid 2px rgb(15, 90, 168)` | 2 px |
+| 14 | `DIV.tabla-contenedor` (libros) | `solid 2px rgb(15, 90, 168)` | **−3 px** (hacia adentro) |
+| 15–16 | `INPUT#cliente-nombre`, `#cliente-email` | `solid 2px rgb(15, 90, 168)` | 2 px |
+| 17 | `BUTTON.boton` (Registrar cliente) | `solid 2px rgb(15, 90, 168)` | 2 px |
+| 18 | `DIV.tabla-contenedor` (clientes) | `solid 2px rgb(15, 90, 168)` | **−3 px** |
+| 19–21 | `SELECT#venta-cliente`, `SELECT#renglon-libro`, `INPUT#renglon-cantidad` | `solid 2px rgb(15, 90, 168)` | 2 px |
+| 22 | `BUTTON#boton-agregar-renglon` | `solid 2px rgb(15, 90, 168)` | 2 px |
+| 23 | `DIV.tabla-contenedor` (renglones) | `solid 2px rgb(15, 90, 168)` | **−3 px** |
+| 24 | `BUTTON.boton` (Confirmar venta) | `solid 2px rgb(15, 90, 168)` | 2 px |
+| 25–26 | `DIV.tabla-contenedor` (historial y detalle) | `solid 2px rgb(15, 90, 168)` | **−3 px** |
+
+- **26 de 26** paradas declaradas fueron alcanzadas, en **orden lógico** (navegación → buscador → cada vista en su orden → controles → contenedores).
+- **0 paradas sin anillo de foco visible** con el color `--color-foco`.
+- El foco **sale del documento** al final y **vuelve al inicio**: no hay trampa de foco.
+- **`Enter` sobre un enlace del `<nav>`**: `location.hash` pasó de `''` a `'#ventas'` → la navegación es operativa con teclado, y el panel de Ventas queda visible.
+
+#### 2.7.2 Lectura del CSSOM — **APROBADO**
+
+Método: la **copia temporal** servida por `http://127.0.0.1` (mismo origen, sin tocar el producto) y lectura de `document.styleSheets[0].cssRules`, que en `file://` queda bloqueada por la política de origen único de Chromium.
+
+| Dato | Valor medido | Coincide con lo verificado por lectura de texto |
+|---|---|---|
+| Hojas de estilo cargadas | 1 (`http://127.0.0.1:8731/css/styles.css`) | ✔ |
+| Reglas accesibles (`cssRules.length`) | **71** (68 de estilo + 3 media queries) | ✔ |
+| Declaraciones en `:root` | **38** | ✔ |
+| Media queries | `(min-width: 48rem)`, `(min-width: 64rem)`, `(prefers-reduced-motion: reduce)` | ✔ |
+| Reglas con `!important` | **1** (la de `prefers-reduced-motion`) | ✔ |
 
 ---
 
 ## 3. Limitaciones
 
-- La verificación de navegador cubre **un solo motor** (EdgeCore 155). Firefox y Safari no están instalados: no se puede afirmar compatibilidad entre navegadores.
-- El recorrido de teclado se verificó **programáticamente** (enfoque + estilos computados), no con pulsaciones reales sobre la ventana.
+- La verificación de navegador cubre **un solo motor** (EdgeCore 155). Firefox y Safari no están instalados: no se puede afirmar compatibilidad entre navegadores. **No se instaló ningún motor adicional** (cambio de sistema fuera del alcance aprobado).
 - La inspección visual se hizo sobre **capturas estáticas**: no se verificó el comportamiento interactivo (hover, focus visible por teclado, transición de scroll suave).
 - Las tablas están hoy vacías (los `tbody` se llenan en los Ej. 3–5): la apariencia con contenido real —filas largas, correos extensos, autores múltiples— **no** pudo verificarse y deberá revisarse en los ejercicios siguientes. Las reglas de preparación (§5.8) están escritas para esos casos, pero sin datos no hay evidencia.
 - Los componentes de los Ej. 3–6 (`.libro`, `.fila-renglon`, `.venta__total`, `.detalle-venta`) están **estilizados pero sin render**: su apariencia real solo se confirmará cuando exista contenido.
@@ -203,10 +246,10 @@ Fuera del proyecto (temp del sistema, no se entrega): copia de verificación, ar
 |---|---|---|
 | **CA-01** (R-01, R-02, R-06) | 8 familias de estilos definidas; 38 tokens en `:root`; 45 clases del HTML reutilizadas (38 existentes + 1 reservada); 0 selectores por `id`; 0 CSS inline; 0 URLs externas (§2.2) | **APROBADO** |
 | **CA-02** (R-05) | `scrollWidth == clientWidth` a 320 y 1280 px; 5/5 contenedores de tabla con scroll propio a 320 px; ningún elemento desborda fuera de un scroller; escala fluida verificada (B1–B3, B8) | **APROBADO** |
-| **CA-03** (R-04) | Los 26 puntos de foco con anillo `solid 2px rgb(15,90,168)`; anillo del contenedor hacia adentro; 0 `outline: none`; botones ≥ 44 px; contraste renderizado AA en 8 pares; mensajes legibles por su texto y con doble señal (B9–B13) | **APROBADO** (recorrido de teclado en vivo: **OMITIDO**, §2.6) |
+| **CA-03** (R-04) | Los 26 puntos de foco con anillo `solid 2px rgb(15,90,168)`; anillo del contenedor hacia adentro; 0 `outline: none`; botones ≥ 44 px; contraste renderizado AA en 8 pares; mensajes legibles por su texto y con doble señal (B9–B13); **recorrido con teclas Tab reales: 26/26 paradas en orden lógico, sin trampa de foco, y `Enter` navega a `#ventas`** (§2.7.1) | **APROBADO** |
 | **CA-04** (R-03, R-07) | 10 contenedores de estado con estilo distinguible; 7/7 ocultos respetan `hidden`; 3/3 visibles; glifos correctos; reglas de preparación de §5.8 presentes; `<template>` inerte y `js/app.js` vacío (B4–B6, §2.2) | **APROBADO** |
 | **CA-05** (global) | `git diff` sin diferencias en `index.html` y `js/app.js`; único archivo de producto modificado: `css/styles.css`; sin JS, datos, imágenes, README ni modo oscuro | **APROBADO** |
 | **CA-06** (global) | CSS3 moderno con custom properties; BEM en español; mobile-first; `box-sizing: border-box` global; `min-inline-size: 0`; `clamp()`/`minmax()`; `!important` solo justificado; 0 `style=` inline; 0 URLs externas | **APROBADO** |
-| **CA-07** (R-08) | 48 controles de la capa (a) + 16 de la capa (b) + 8 suplementarios + 8 de contraste, todos ejecutados y reportados | **APROBADO** |
-| **CA-08** (R-08) | 3 controles marcados **OMITIDO** con su motivo (§2.6) — ninguno presentado como aprobado; el único **PENDIENTE** se cerró ejecutándolo (B16); 2 falsos positivos de mi propio script corregidos y documentados | **APROBADO** |
+| **CA-07** (R-08) | 48 controles de la capa (a) + 16 de la capa (b) + 8 suplementarios + 8 de contraste + 2 de cierre (T-14), todos ejecutados y reportados | **APROBADO** |
+| **CA-08** (R-08) | **1** control marcado **OMITIDO** con su motivo (segundo motor de renderizado, §2.6) y **1** **PENDIENTE POR ALCANCE** (apariencia con contenido real, Ej. 3–5) — ninguno presentado como aprobado; los 3 que quedaban abiertos en la primera redacción se cerraron ejecutándolos (T-14, §2.7) y 2 falsos positivos de mi propio script se corrigieron y documentaron | **APROBADO** |
 | **CA-09** (global) | Supuestos S1–S9, decisiones D1–D14, pendientes y limitaciones identificados en la SPEC §9 y en §2.6, §3 y §4 de este resumen | **APROBADO** |
