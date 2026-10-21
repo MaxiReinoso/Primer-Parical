@@ -393,7 +393,7 @@ function renderTablaClientes() {
   if (clientes.length === 0) {
     const tr = document.createElement("tr");
     const td = document.createElement("td");
-    td.colSpan = 3;
+    td.colSpan = 2;
     td.textContent = "No hay clientes registrados.";
     td.style.textAlign = "center";
     td.style.padding = "1rem";
@@ -412,10 +412,10 @@ function renderTablaClientes() {
     tdEmail.textContent = cliente.email;
 
     const tdAcciones = document.createElement("td");
-    // Placeholder para futuras acciones (Ej. 5/6)
+
     tdAcciones.textContent = "—";
 
-    tr.append(tdNombre, tdEmail, tdAcciones);
+    tr.append(tdNombre, tdEmail);
     tbody.appendChild(tr);
   }
 }
