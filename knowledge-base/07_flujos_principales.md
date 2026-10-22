@@ -21,7 +21,7 @@ Cada flujo se documenta extremo a extremo. El alcance real de cada flujo depende
 ## Flujo 2: Alta de un libro
 **Disparador**: envío del formulario `#form-libro`
 **Actor**: lector
-**Estado actual**: **pendiente (Ejercicio 4)** — el HTML y el CSS del formulario ya están listos; falta la lógica y el conjunto de datos.
+**Estado actual**: **completado (Ejercicio 4, archivado el 2026-10-22)** — el HTML, el CSS y el conjunto de datos ya estaban listos (los entregaron C-01, C-02 y C-03); faltaba la lógica de altas, que implementó C-04.
 
 **Pasos**:
 1. El usuario completa título, ISBN, precio, editorial, género (opcional) y autores.
@@ -38,7 +38,7 @@ Cada flujo se documenta extremo a extremo. El alcance real de cada flujo depende
 ## Flujo 3: Alta de un cliente
 **Disparador**: envío del formulario `#form-cliente`
 **Actor**: lector
-**Estado actual**: **pendiente (Ejercicio 4)**.
+**Estado actual**: **completado (Ejercicio 4, archivado el 2026-10-22)**.
 
 **Pasos**:
 1. El usuario completa nombre completo y email.

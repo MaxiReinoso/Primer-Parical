@@ -52,8 +52,8 @@ C-01 ejercicio1-estructura-html            ✓ completado  (20 pts)
 | C-01 `ejercicio1-estructura-html` | `index.html` | — | Ya entregado: el HTML queda **congelado** y es la fuente de verdad de la estructura |
 | C-02 `ejercicio2-estilos-css` | `css/styles.css`, `css/base.css`, `css/layout.css`, `css/componentes.css` | `index.html`, `js/app.js` | Ya entregado: los estilos nuevos se **agregan**, no se redefinen los existentes |
 | C-03 `ejercicio3-datos-catalogo-filtro` | `js/app.js` | `index.html`, `css/` | Dueño exclusivo de `js/app.js` durante su ventana de trabajo |
-| C-04 `ejercicio4-altas-libros-clientes` | `js/app.js` | `index.html`, `css/` | ⚠️ Comparte `js/app.js` con C-03, C-05 y C-06 |
-| C-05 `ejercicio5-venta-historial` | `js/app.js` | `index.html`, `css/` | ⚠️ Comparte `js/app.js` con C-03, C-04 y C-06 |
+| C-04 `ejercicio4-altas-libros-clientes` | `js/app.js`, `index.html` | `css/` | ⚠️ Comparte `js/app.js` con C-03, C-05 y C-06. Excepción declarada: `index.html` **solo** recibe el atributo `novalidate` en `#form-libro` y `#form-cliente`; el resto del HTML sigue congelado |
+| C-05 `ejercicio5-venta-historial` | `js/app.js` | `index.html`, `css/` | ⚠️ Comparte `js/app.js` con C-03, C-04 y C-06. **C-04 define `poblarSelectoresRelacionados()` y C-05 la reutiliza, no la reimplementa** (design.md D-05) |
 | C-06 `ejercicio6-persistencia-documentacion` | `js/app.js`, `README.md` | `index.html`, `css/` | Es el único change que escribe `README.md` |
 
 **Restricción de recurso (no es una dependencia):** C-03, C-04, C-05 y C-06 escriben **el mismo archivo** `js/app.js`. Por lo tanto el paralelismo entre ellos es **lógico**, no de escritura concurrente: se puede trabajar en ramas separadas, pero el **merge sobre `js/app.js` se serializa en el orden C-03 → C-04/C-05 → C-06**.
@@ -207,7 +207,7 @@ Los pasos 3 a 6 los ejecuta **una persona distinta cada uno** (el equipo aún de
 > Rama A del fork del GATE 3. Corre en paralelo lógico con C-05.
 
 ### [C-04] `ejercicio4-altas-libros-clientes`
-- **Estado**: `[ ]` pendiente — 15 pts. US-008, US-009.
+- **Estado**: `[x]` **completado y archivado** — 15 pts. US-008, US-009. Entregado 2026-10-22. Evidencia: `docs/ejercicio4-implementacion-resumen.md` + change archivado `2026-10-22-ejercicio4-altas-libros-clientes`
 - **Scope**: Formularios de alta de libros y de clientes, con validación en el cliente
   - **Poblar selectores**: `#libro-editorial` y `#libro-genero` se generan desde los datos locales; `#libro-autores` es un selector múltiple con los autores existentes; `#libro-genero` mantiene la opción «Sin clasificar» (`value=""`), que representa la **ausencia** de género y no un género ficticio (RN-LIB-08, RN-LIB-09)
   - **Validación de libro** (`validarLibro()`), con motivo de rechazo explícito por regla:
@@ -219,7 +219,7 @@ Los pasos 3 a 6 los ejecuta **una persona distinta cada uno** (el equipo aún de
   - **Alta de cliente**: `submit` de `#form-cliente` con `preventDefault`; `#cliente-mensaje-error` / `#cliente-mensaje-exito`; se limpia el formulario y se actualizan `#tabla-clientes-cuerpo` y el selector `#venta-cliente` sin recargar
   - **Restricciones**: la validación es **declarativa y pedagógica**, no de seguridad (RN-GL-04); el HTML **no** usa `required`/`pattern`/`min` (la validación es de JS); no se implementa edición ni borrado de registros (no lo pide la consigna)
   - **Verificación**: casos «ISBN existente / ISBN nuevo» y «email inválido / email existente en mayúsculas / email nuevo» de `12_casos_manuales.md`
-  - **Archivos que puede tocar**: `js/app.js` — y nada más. `index.html` y `css/` son territorio de C-01 y C-02
+  -   - **Archivos que puede tocar**: `js/app.js` y `index.html` — este último **solo** para agregar el atributo `novalidate` en `#form-libro` y `#form-cliente`, de modo que la validación sea íntegramente de JavaScript (decisión D-01, autorizada por el docente el 2026-10-21). `css/` es territorio de C-02 y no se toca
 - **Dependencias**: C-03
 - **Governance**: MEDIO — flujo con estado (alta, error, refresco de listados y selectores) y validación replicada en la interfaz
 - **Leer antes**:
@@ -302,7 +302,7 @@ Los pasos 3 a 6 los ejecuta **una persona distinta cada uno** (el equipo aún de
 | C-01 `ejercicio1-estructura-html` | 1 | 20 | `[x]` completado | — | `index.html` | Completo (`proposal`+`design`+`tasks`+`spec`); falta archivar |
 | C-02 `ejercicio2-estilos-css` | 2 | 20 | `[x]` completado | C-01 | `css/` | Scaffold vacío: falta `proposal`+`design`+`tasks`+`spec` |
 | C-03 `ejercicio3-datos-catalogo-filtro` | 3 | 15 | `[x]` completado | C-01, C-02 | `js/app.js` | Completo (`proposal`+`design`+`tasks`+`spec`); archivado 2026-10-21 |
-| C-04 `ejercicio4-altas-libros-clientes` | 4 | 15 | `[ ]` pendiente | C-03 | `js/app.js` | Scaffold vacío: falta `proposal`+`design`+`tasks`+`spec` |
+| C-04 `ejercicio4-altas-libros-clientes` | 4 | 15 | `[x]` completado | C-03 | `js/app.js`, `index.html` | Completo (`proposal`+`design`+`tasks`+`spec`); archivado 2026-10-22 |
 | C-05 `ejercicio5-venta-historial` | 5 | 20 | `[ ]` pendiente | C-03 | `js/app.js` | Scaffold vacío: falta `proposal`+`design`+`tasks`+`spec` |
 | C-06 `ejercicio6-persistencia-documentacion` | 6 | 10 | `[ ]` pendiente | C-04, C-05 | `js/app.js`, `README.md` | Scaffold vacío: falta `proposal`+`design`+`tasks`+`spec` |
 | **Total** | | **100** | 55 pts entregados · 45 pts pendientes | | | |
