@@ -179,7 +179,7 @@ Los pasos 3 a 6 los ejecuta **una persona distinta cada uno** (el equipo aún de
 > Único change habilitado en este momento: todo lo demás depende de él.
 
 ### [C-03] `ejercicio3-datos-catalogo-filtro`
-- **Estado**: `[ ]` pendiente — 15 pts. US-006, US-007.
+- **Estado**: `[x]` **completado y archivado** — 15 pts. US-006, US-007. Archivado 2026-10-21. Evidencia: `docs/ejercicio3-implementacion-resumen.md` + change archivado `ejercicio3-datos-catalogo-filtro` + spec consolidada `openspec/specs/catalogo-filtro/spec.md`
 - **Scope**: Arrays de datos locales, render del catálogo y filtro por título
   - **Datos** (en `js/app.js`): arrays `editoriales`, `generos`, `autores`, `libros`, `clientes` con **`id` estable**; semilla mínima exigida: **6 libros, 2 editoriales, 2 géneros, 3 autores, 3 clientes** ficticios
   - **Relaciones**: cada libro con `editorialId` existente, `autorIds` con **1 o más** autores existentes y `generoId` **opcional**; incluir al menos un libro **sin género** para ejercitar «Sin clasificar»
@@ -301,14 +301,14 @@ Los pasos 3 a 6 los ejecuta **una persona distinta cada uno** (el equipo aún de
 |---|---|---|---|---|---|---|
 | C-01 `ejercicio1-estructura-html` | 1 | 20 | `[x]` completado | — | `index.html` | Completo (`proposal`+`design`+`tasks`+`spec`); falta archivar |
 | C-02 `ejercicio2-estilos-css` | 2 | 20 | `[x]` completado | C-01 | `css/` | Scaffold vacío: falta `proposal`+`design`+`tasks`+`spec` |
-| C-03 `ejercicio3-datos-catalogo-filtro` | 3 | 15 | `[ ]` pendiente | C-01, C-02 | `js/app.js` | Scaffold vacío: falta `proposal`+`design`+`tasks`+`spec` |
+| C-03 `ejercicio3-datos-catalogo-filtro` | 3 | 15 | `[x]` completado | C-01, C-02 | `js/app.js` | Completo (`proposal`+`design`+`tasks`+`spec`); archivado 2026-10-21 |
 | C-04 `ejercicio4-altas-libros-clientes` | 4 | 15 | `[ ]` pendiente | C-03 | `js/app.js` | Scaffold vacío: falta `proposal`+`design`+`tasks`+`spec` |
 | C-05 `ejercicio5-venta-historial` | 5 | 20 | `[ ]` pendiente | C-03 | `js/app.js` | Scaffold vacío: falta `proposal`+`design`+`tasks`+`spec` |
 | C-06 `ejercicio6-persistencia-documentacion` | 6 | 10 | `[ ]` pendiente | C-04, C-05 | `js/app.js`, `README.md` | Scaffold vacío: falta `proposal`+`design`+`tasks`+`spec` |
-| **Total** | | **100** | 40 pts entregados · 60 pts pendientes | | | |
+| **Total** | | **100** | 55 pts entregados · 45 pts pendientes | | | |
 
 > Los 6 scaffolds de change ya existen (creados el 2026-10-21 con `openspec new change <nombre>`). Este roadmap **no los modifica**: los documentos `proposal.md`, `design.md` y `tasks.md` de los changes 2 a 6 se redactan en la fase `propose` de cada uno, y cada `tasks.md` **debe declarar los archivos que puede tocar** (§Reparto de propiedad de archivos).
 
-**Primer change recomendado:** `C-03` (`ejercicio3-datos-catalogo-filtro`) — es el único habilitado: depende solo de trabajo ya entregado, y su `apply` desbloquea las dos ramas del GATE 3.
+**Primer change recomendado:** `C-04` (`ejercicio4-altas-libros-clientes`) y `C-05` (`ejercicio5-venta-historial`) — ambos habilitados tras C-03 ✓. Paralelismo lógico (ambos escriben `js/app.js`; merge serializa C-04 → C-05).
 
 **Último paso de la secuencia:** `C-06` (`ejercicio6-persistencia-documentacion`) — cierra la persistencia, la evidencia de los casos manuales y el README de entrega.
