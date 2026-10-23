@@ -472,6 +472,7 @@ function registrarLibro() {
   renderLibros();
   renderCatalogo(filtrarLibros(document.getElementById("buscador-titulo").value));
   poblarSelectoresRelacionados();
+  guardarEstado();
 }
 
 function registrarCliente() {
@@ -496,6 +497,7 @@ function registrarCliente() {
   mostrarExito(mensajeExito, mensajeError);
   renderClientes();
   poblarSelectoresRelacionados();
+  guardarEstado();
 }
 
 // --- 6.7 Inicialización ---
@@ -518,3 +520,484 @@ function inicializarAltas() {
 }
 
 document.addEventListener("DOMContentLoaded", inicializarAltas);
+
+// ============================
+// 7. Ventas e historial (Ejercicio 5)
+// ============================
+
+// --- 7.1 Estado de la venta ---
+
+const ventas = [];
+const ventaEnCurso = { clienteId: null, renglones: [] };
+
+function generarIdVenta() {
+  return siguienteId(ventas, "ven");
+}
+
+function calcularSubtotal(renglon) {
+  return renglon.cantidad * renglon.precioUnitario;
+}
+
+function calcularTotal(renglones) {
+  return renglones.reduce((total, renglon) => total + calcularSubtotal(renglon), 0);
+}
+
+// --- 7.2 Render de los renglones en curso ---
+
+function renderRenglonesEnCurso() {
+  const cuerpo = document.getElementById("tabla-renglones-cuerpo");
+  const plantilla = document.getElementById("plantilla-renglon");
+
+  cuerpo.replaceChildren();
+
+  ventaEnCurso.renglones.forEach((renglon, indice) => {
+    const clone = plantilla.content.cloneNode(true);
+    const fila = clone.querySelector(".fila-renglon");
+
+    fila.querySelector(".fila-renglon__libro").textContent = renglon.titulo;
+    fila.querySelector(".fila-renglon__cantidad").textContent = String(renglon.cantidad);
+    fila.querySelector(".fila-renglon__precio-unitario").textContent = formatearPrecio(renglon.precioUnitario);
+    fila.querySelector(".fila-renglon__subtotal").textContent = formatearPrecio(renglon.subtotal);
+
+    fila.querySelector(".boton--quitar").addEventListener("click", () => quitarRenglon(indice));
+    fila.querySelector(".boton--modificar").addEventListener("click", () => modificarRenglon(indice));
+
+    cuerpo.appendChild(clone);
+  });
+
+  document.getElementById("venta-total").textContent = formatearPrecio(calcularTotal(ventaEnCurso.renglones));
+}
+
+// --- 7.3 Agregar, modificar y quitar renglones ---
+
+function agregarRenglon() {
+  const mensajeExito = document.getElementById("venta-mensaje-exito");
+  const mensajeError = document.getElementById("venta-mensaje-error");
+  const libroId = document.getElementById("renglon-libro").value;
+  const cantidadTexto = document.getElementById("renglon-cantidad").value.trim();
+  const cantidad = cantidadTexto === "" ? NaN : Number(cantidadTexto);
+  const libro = obtenerLibroPorId(libroId);
+
+  if (!libro) {
+    mostrarError(mensajeError, mensajeExito, [
+      { motivo: "Seleccioná un libro válido.", campo: "renglon-libro" }
+    ]);
+    return;
+  }
+
+  if (!Number.isInteger(cantidad) || cantidad <= 0) {
+    mostrarError(mensajeError, mensajeExito, [
+      { motivo: "La cantidad debe ser un número entero mayor que cero.", campo: "renglon-cantidad" }
+    ]);
+    return;
+  }
+
+  const existente = ventaEnCurso.renglones.find(renglon => renglon.libroId === libroId);
+
+  if (existente) {
+    existente.cantidad += cantidad;
+    existente.subtotal = calcularSubtotal(existente);
+    renderRenglonesEnCurso();
+    mostrarMensaje(mensajeExito, `Se sumó la cantidad al renglón existente de "${libro.titulo}".`);
+    ocultarMensaje(mensajeError);
+    return;
+  }
+
+  ventaEnCurso.renglones.push({
+    libroId: libro.id,
+    titulo: libro.titulo,
+    isbn: libro.isbn,
+    precioUnitario: libro.precio,
+    cantidad,
+    subtotal: cantidad * libro.precio
+  });
+  ventaEnCurso.clienteId = document.getElementById("venta-cliente").value;
+  document.getElementById("renglon-cantidad").value = "";
+
+  ocultarMensaje(mensajeExito);
+  ocultarMensaje(mensajeError);
+  renderRenglonesEnCurso();
+}
+
+function modificarRenglon(indice) {
+  const mensajeExito = document.getElementById("venta-mensaje-exito");
+  const mensajeError = document.getElementById("venta-mensaje-error");
+  const renglon = ventaEnCurso.renglones[indice];
+  if (!renglon) return;
+
+  const respuesta = window.prompt("Ingresá la nueva cantidad:", String(renglon.cantidad));
+  if (respuesta === null) return;
+
+  const cantidadTexto = String(respuesta).trim();
+  const cantidad = cantidadTexto === "" ? NaN : Number(cantidadTexto);
+
+  if (!Number.isInteger(cantidad) || cantidad <= 0) {
+    mostrarError(mensajeError, mensajeExito, [
+      { motivo: "La cantidad debe ser un número entero mayor que cero.", campo: "renglon-cantidad" }
+    ]);
+    return;
+  }
+
+  renglon.cantidad = cantidad;
+  renglon.subtotal = calcularSubtotal(renglon);
+  ocultarMensaje(mensajeError);
+  renderRenglonesEnCurso();
+}
+
+function quitarRenglon(indice) {
+  if (indice < 0 || indice >= ventaEnCurso.renglones.length) return;
+  ventaEnCurso.renglones.splice(indice, 1);
+  renderRenglonesEnCurso();
+}
+
+// --- 7.4 Confirmación de la venta ---
+
+function confirmarVenta() {
+  const mensajeExito = document.getElementById("venta-mensaje-exito");
+  const mensajeError = document.getElementById("venta-mensaje-error");
+  const clienteId = document.getElementById("venta-cliente").value;
+  const cliente = obtenerClientes().find(item => item.id === clienteId);
+
+  if (!clienteId || !cliente) {
+    mostrarError(mensajeError, mensajeExito, [
+      { motivo: "Seleccioná un cliente válido.", campo: "venta-cliente" }
+    ]);
+    return;
+  }
+
+  if (ventaEnCurso.renglones.length === 0) {
+    mostrarError(mensajeError, mensajeExito, [
+      { motivo: "Agregá al menos un renglón a la venta.", campo: "renglon-libro" }
+    ]);
+    return;
+  }
+
+  const cantidadInvalida = ventaEnCurso.renglones.some(
+    renglon => !Number.isInteger(renglon.cantidad) || renglon.cantidad <= 0
+  );
+  if (cantidadInvalida) {
+    mostrarError(mensajeError, mensajeExito, [
+      { motivo: "Las cantidades deben ser números enteros mayores que cero.", campo: "renglon-cantidad" }
+    ]);
+    return;
+  }
+
+  const renglones = ventaEnCurso.renglones.map(renglon => ({
+    libroId: renglon.libroId,
+    titulo: renglon.titulo,
+    isbn: renglon.isbn,
+    precioUnitario: renglon.precioUnitario,
+    cantidad: renglon.cantidad,
+    subtotal: renglon.subtotal
+  }));
+
+  const venta = {
+    id: generarIdVenta(),
+    fecha: new Date().toISOString(),
+    clienteId: cliente.id,
+    clienteNombre: cliente.nombre,
+    renglones,
+    total: calcularTotal(renglones)
+  };
+  ventas.push(venta);
+  guardarEstado();
+
+  ventaEnCurso.clienteId = null;
+  ventaEnCurso.renglones = [];
+  document.getElementById("tabla-renglones-cuerpo").replaceChildren();
+  document.getElementById("renglon-cantidad").value = "";
+  document.getElementById("venta-total").textContent = formatearPrecio(0);
+
+  mostrarExito(mensajeExito, mensajeError);
+  renderHistorial();
+}
+
+// --- 7.5 Historial y detalle ---
+
+function renderHistorial() {
+  const cuerpo = document.getElementById("tabla-historial-cuerpo");
+  const vacio = document.getElementById("historial-vacio");
+
+  cuerpo.replaceChildren();
+
+  ventas.slice().reverse().forEach(venta => {
+    const fila = document.createElement("tr");
+
+    [venta.id, venta.fecha, venta.clienteNombre, formatearPrecio(venta.total)].forEach(texto => {
+      const celda = document.createElement("td");
+      celda.textContent = texto;
+      fila.appendChild(celda);
+    });
+
+    const celdaDetalle = document.createElement("td");
+    const boton = document.createElement("button");
+    boton.type = "button";
+    boton.className = "boton boton--secundario";
+    boton.textContent = "Ver detalle";
+    boton.addEventListener("click", () => renderDetalleVenta(venta));
+    celdaDetalle.appendChild(boton);
+    fila.appendChild(celdaDetalle);
+
+    cuerpo.appendChild(fila);
+  });
+
+  vacio.hidden = ventas.length > 0;
+}
+
+function renderDetalleVenta(venta) {
+  const cuerpo = document.getElementById("tabla-detalle-cuerpo");
+  const vacio = document.getElementById("historial-detalle-vacio");
+
+  cuerpo.replaceChildren();
+
+  venta.renglones.forEach(renglon => {
+    const fila = document.createElement("tr");
+    [
+      renglon.titulo,
+      String(renglon.cantidad),
+      formatearPrecio(renglon.precioUnitario),
+      formatearPrecio(renglon.subtotal)
+    ].forEach(texto => {
+      const celda = document.createElement("td");
+      celda.textContent = texto;
+      fila.appendChild(celda);
+    });
+    cuerpo.appendChild(fila);
+  });
+
+  vacio.hidden = true;
+}
+
+// --- 7.6 Inicialización ---
+
+function inicializarVentas() {
+  document.getElementById("form-venta").noValidate = true;
+
+  document.getElementById("form-venta").addEventListener("submit", evento => {
+    evento.preventDefault();
+    confirmarVenta();
+  });
+
+  document.getElementById("boton-agregar-renglon").addEventListener("click", () => {
+    agregarRenglon();
+  });
+
+  ocultarMensaje(document.getElementById("venta-mensaje-exito"));
+  ocultarMensaje(document.getElementById("venta-mensaje-error"));
+  document.getElementById("historial-detalle-vacio").hidden = false;
+  document.getElementById("tabla-detalle-cuerpo").replaceChildren();
+
+  poblarSelectoresRelacionados();
+  renderRenglonesEnCurso();
+  renderHistorial();
+}
+
+document.addEventListener("DOMContentLoaded", inicializarVentas);
+
+// ============================
+// 8. Persistencia local (Ejercicio 6)
+// ============================
+
+const CLAVE_ESTADO = "libreria-el-estante:v1";
+
+function reemplazarContenido(coleccion, nuevos) {
+  coleccion.splice(0, coleccion.length, ...nuevos);
+}
+
+function esTextoNoVacio(valor) {
+  return typeof valor === "string" && valor.trim() !== "";
+}
+
+function esNumeroFinito(valor) {
+  return typeof valor === "number" && Number.isFinite(valor);
+}
+
+function normalizarLibro(valor) {
+  if (!valor || typeof valor !== "object" || Array.isArray(valor)) return null;
+
+  const generoId = valor.generoId === undefined ? null : valor.generoId;
+
+  if (
+    !esTextoNoVacio(valor.id) ||
+    !esTextoNoVacio(valor.titulo) ||
+    !esTextoNoVacio(valor.isbn) ||
+    !esTextoNoVacio(valor.editorialId) ||
+    !esNumeroFinito(valor.precio) ||
+    valor.precio <= 0 ||
+    !(generoId === null || typeof generoId === "string") ||
+    !Array.isArray(valor.autorIds) ||
+    !valor.autorIds.every(esTextoNoVacio)
+  ) {
+    return null;
+  }
+
+  return {
+    id: valor.id,
+    titulo: valor.titulo,
+    isbn: valor.isbn,
+    precio: valor.precio,
+    editorialId: valor.editorialId,
+    generoId,
+    autorIds: [...valor.autorIds]
+  };
+}
+
+function normalizarCliente(valor) {
+  if (!valor || typeof valor !== "object" || Array.isArray(valor)) return null;
+
+  if (!esTextoNoVacio(valor.id) || !esTextoNoVacio(valor.nombre) || !esTextoNoVacio(valor.email)) {
+    return null;
+  }
+
+  return { id: valor.id, nombre: valor.nombre, email: valor.email };
+}
+
+function normalizarRenglon(valor) {
+  if (!valor || typeof valor !== "object" || Array.isArray(valor)) return null;
+
+  if (
+    !esTextoNoVacio(valor.libroId) ||
+    !Number.isInteger(valor.cantidad) ||
+    valor.cantidad <= 0 ||
+    !esNumeroFinito(valor.precioUnitario) ||
+    !esNumeroFinito(valor.subtotal)
+  ) {
+    return null;
+  }
+
+  return {
+    libroId: valor.libroId,
+    titulo: typeof valor.titulo === "string" ? valor.titulo : "",
+    isbn: typeof valor.isbn === "string" ? valor.isbn : "",
+    cantidad: valor.cantidad,
+    precioUnitario: valor.precioUnitario,
+    subtotal: valor.subtotal
+  };
+}
+
+function normalizarVenta(valor) {
+  if (!valor || typeof valor !== "object" || Array.isArray(valor)) return null;
+
+  if (
+    !esTextoNoVacio(valor.id) ||
+    !esTextoNoVacio(valor.fecha) ||
+    !Array.isArray(valor.renglones) ||
+    valor.renglones.length === 0 ||
+    !esNumeroFinito(valor.total)
+  ) {
+    return null;
+  }
+
+  const renglones = [];
+  for (const renglon of valor.renglones) {
+    const normalizado = normalizarRenglon(renglon);
+    if (!normalizado) return null;
+    renglones.push(normalizado);
+  }
+
+  return {
+    id: valor.id,
+    fecha: valor.fecha,
+    clienteId: typeof valor.clienteId === "string" ? valor.clienteId : null,
+    clienteNombre: typeof valor.clienteNombre === "string" ? valor.clienteNombre : "",
+    renglones,
+    total: valor.total
+  };
+}
+
+function normalizarEstado(valor) {
+  if (!valor || typeof valor !== "object" || Array.isArray(valor)) {
+    return { estado: null, valido: false, motivo: "La raíz del estado no es un objeto." };
+  }
+
+  if (!Array.isArray(valor.libros) || !Array.isArray(valor.clientes) || !Array.isArray(valor.ventas)) {
+    return { estado: null, valido: false, motivo: "libros, clientes y ventas deben ser arrays." };
+  }
+
+  return {
+    estado: {
+      libros: valor.libros.map(normalizarLibro).filter(Boolean),
+      clientes: valor.clientes.map(normalizarCliente).filter(Boolean),
+      ventas: valor.ventas.map(normalizarVenta).filter(Boolean)
+    },
+    valido: true,
+    motivo: ""
+  };
+}
+
+function informarProblemaPersistencia(motivo) {
+  let aviso = document.querySelector("[data-persistencia]");
+
+  if (!aviso) {
+    aviso = document.createElement("p");
+    aviso.className = "mensaje mensaje--error";
+    aviso.setAttribute("role", "alert");
+    aviso.setAttribute("data-persistencia", "true");
+    const pie = document.querySelector(".pie");
+    if (pie) {
+      pie.appendChild(aviso);
+    } else {
+      document.body.appendChild(aviso);
+    }
+  }
+
+  aviso.textContent = motivo;
+  aviso.hidden = false;
+}
+
+function leerEstadoCrudo() {
+  try {
+    return { crudo: localStorage.getItem(CLAVE_ESTADO), error: null };
+  } catch (error) {
+    return { crudo: null, error };
+  }
+}
+
+function cargarEstado() {
+  const lectura = leerEstadoCrudo();
+
+  if (lectura.error) {
+    const nombre = lectura.error && lectura.error.name ? lectura.error.name : "error desconocido";
+    informarProblemaPersistencia(
+      "No se pudo leer el almacenamiento local: los datos no se conservarán entre recargas."
+    );
+    console.warn(`[persistencia] Lectura fallida (${nombre}).`);
+    return;
+  }
+
+  if (lectura.crudo === null) return;
+
+  let valor;
+  try {
+    valor = JSON.parse(lectura.crudo);
+  } catch (error) {
+    console.warn("[persistencia] El estado guardado no es JSON válido; se usan los datos iniciales.");
+    return;
+  }
+
+  const resultado = normalizarEstado(valor);
+  if (!resultado.valido) {
+    console.warn(`[persistencia] Estado descartado: ${resultado.motivo}`);
+    return;
+  }
+
+  reemplazarContenido(libros, resultado.estado.libros);
+  reemplazarContenido(clientes, resultado.estado.clientes);
+  reemplazarContenido(ventas, resultado.estado.ventas);
+}
+
+function guardarEstado() {
+  try {
+    localStorage.setItem(CLAVE_ESTADO, JSON.stringify({ libros, clientes, ventas }));
+  } catch (error) {
+    const nombre = error && error.name ? error.name : "desconocido";
+    const motivo =
+      nombre === "QuotaExceededError"
+        ? "No se pudo guardar: se superó la cuota del almacenamiento local. El cambio sigue disponible en esta sesión."
+        : "No se pudo guardar el estado en el almacenamiento local. El cambio sigue disponible en esta sesión.";
+    informarProblemaPersistencia(motivo);
+    console.warn(`[persistencia] Escritura fallida (${nombre}).`);
+  }
+}
+
+cargarEstado();
